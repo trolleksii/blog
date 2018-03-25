@@ -50,8 +50,8 @@ class LoginSerializer(serializers.Serializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """
-    Handles new users registration process.
-    Creates a profile for each new user.
+    Handles user registration process. In addition creates a profile
+    for each added user.
     """
     class Meta:
         model = User
