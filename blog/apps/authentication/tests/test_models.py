@@ -20,6 +20,13 @@ class AuthModelTests(TestCase):
         user.full_clean()
         user.save()
 
+    def test_str_method(self):
+        user = User.objects.create_user(
+            username='kenny',
+            password='qwerty123'
+        )
+        self.assertEqual(str(user), user.username)
+
     def test_add_user_wrong_email(self):
         with self.assertRaises(Exception):
             user = User(
