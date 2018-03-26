@@ -21,7 +21,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         Check if request owner follows profile viewed(obj).
         """
         request = self.context.get('request', None)
-        print(request)
         if request and request.user.is_authenticated:
             return request.user.profile.has_in_followees(obj)
         return False
