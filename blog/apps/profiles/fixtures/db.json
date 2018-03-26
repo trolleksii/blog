@@ -1,0 +1,118 @@
+[
+{
+  "model": "authentication.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$CZSmABYJwi64$+hPrg1BPtKU4WQpZ725rYnqquRul8jR0JkInY87zGaM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kenny",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T07:16:29.316Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$xk3g5DNodPEP$1afC9lug7SRYl0bEc3Q9Q4LoDW2dpMYDvsrn8ecEJIo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "stan",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T09:14:51.311Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$hc4LSPQt14o2$NScyKovumdn/C0nbRcOxThL37WEHFT+IF5JVvgpWHCQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "eric",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T09:44:14.006Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$wIcBoka4Pu6G$COr6/7aBGV+ve9lUJGrgWMfRNzS1sknfLt0eoiypmhQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kyle",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T09:44:50.574Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "about": "Nonsense string",
+    "pic": "http://somedomain.org/pic.jpg",
+    "followees": [
+      2,
+      3,
+      4
+    ]
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "about": "",
+    "pic": "",
+    "followees": []
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "about": "",
+    "pic": "",
+    "followees": []
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 4,
+  "fields": {
+    "user": 4,
+    "about": "",
+    "pic": "",
+    "followees": []
+  }
+}
+]
