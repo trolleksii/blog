@@ -64,26 +64,48 @@ class RegisterSerializerTests(TestCase):
 class LoginSerializerTests(TestCase):
 
     def setUp(self):
-        reg_serializer = RegistrationSerializer(data={
+        User.objects.create_user(**{
             'username': 'SomeUser',
             'password': 'SomePassword',
             'email': 'someuser@somedomain.com'
         })
-        result = reg_serializer.is_valid()
-        self.assertEqual(result, True)
-        self.user = reg_serializer.save()
+        inactiveuser = User.objects.create_user(**{
+            'username': 'InactiveUser',
+            'password': 'SomePassword',
+            'email': 'someuser@somedomain.com'
+        })
+        inactiveuser.is_active = False
+        inactiveuser.save()
 
     def test_login_returns_user_data(self):
         serializer = LoginSerializer(
             data={'username': 'SomeUser', 'password': 'SomePassword'})
         result = serializer.is_valid()
-        self.assertEqual(result, True)
+        self.assertTrue(result)
+
+    def test_login_without_username(self):
+        serializer = LoginSerializer(
+            data={'password': 'wrongPassword'})
+        result = serializer.is_valid()
+        self.assertFalse(result)
+
+    def test_login_without_password(self):
+        serializer = LoginSerializer(
+            data={'username': 'SomeUser'})
+        result = serializer.is_valid()
+        self.assertFalse(result)
 
     def test_login_with_wrong_password(self):
         serializer = LoginSerializer(
             data={'username': 'SomeUser', 'password': 'wrongPassword'})
         result = serializer.is_valid()
-        self.assertEqual(result, False)
+        self.assertFalse(result)
+
+    def test_login_inactive_user(self):
+        serializer = LoginSerializer(
+            data={'username': 'InactiveUser', 'password': 'SomePassword'})
+        result = serializer.is_valid()
+        self.assertFalse(result)
 
 
 class UserSerializerTests(TestCase):
