@@ -13,14 +13,18 @@ class Profile(models.Model):
         return self.user.username
 
     def follow(self, profile):
-        self.followees.add(profile)
+        if profile is not self:
+            self.followees.add(profile)
 
     def unfollow(self, profile):
-        self.followees.remove(profile)
+        if profile is not self:
+            self.followees.remove(profile)
 
     # follower --> me --> followee
-    def is_in_followees(self, profile):
-        return self.followees.filter(pk=profile.pk).exists()
+    def has_in_followees(self, profile):
+        if profile is not self:
+            return self.followees.filter(pk=profile.pk).exists()
+        return False
 
     # def is_in_followers(self, profile):
     #     return self.followers.filter(pk=profile.pk).exists()
