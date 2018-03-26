@@ -13,11 +13,11 @@ class Profile(models.Model):
         return self.user.username
 
     def follow(self, profile):
-        if profile is not self:
+        if profile != self:
             self.followees.add(profile)
 
     def unfollow(self, profile):
-        if profile is not self:
+        if profile != self:
             self.followees.remove(profile)
 
     # follower --> me --> followee
