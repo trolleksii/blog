@@ -14,9 +14,9 @@ class Tag(models.Model):
 
 
 class Article(TimeStampedModel):
-    slug = models.SlugField(db_index=True, max_length=128, unique=True)
-    title = models.CharField(max_length=128)
-    body = models.TextField(max_length=1000)
+    slug = models.SlugField(db_index=True, max_length=128, unique=True, blank=False)
+    title = models.CharField(max_length=128, blank=False)
+    body = models.TextField(max_length=1000, blank=False)
     author = models.ForeignKey(Profile, related_name='articles', on_delete=models.CASCADE)
     liked_by = models.ManyToManyField(Profile, related_name='liked_articles')
     disliked_by = models.ManyToManyField(Profile, related_name='disliked_articles')
@@ -33,8 +33,8 @@ class Article(TimeStampedModel):
 
 
 class Comment(TimeStampedModel):
-    title = models.CharField(max_length=100)
-    body = models.TextField(max_length=500)
+    title = models.CharField(max_length=100, blank=False)
+    body = models.TextField(max_length=500, blank=False)
     article = models.ForeignKey(Article, related_name='comments', on_delete=models.CASCADE)
     author = models.ForeignKey(Profile, related_name='comemnts', on_delete=models.CASCADE)
 
