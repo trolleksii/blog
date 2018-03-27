@@ -1,0 +1,182 @@
+[
+{
+  "model": "authentication.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$CZSmABYJwi64$+hPrg1BPtKU4WQpZ725rYnqquRul8jR0JkInY87zGaM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kenny",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T07:16:29.316Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$xk3g5DNodPEP$1afC9lug7SRYl0bEc3Q9Q4LoDW2dpMYDvsrn8ecEJIo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "stan",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T09:14:51.311Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$hc4LSPQt14o2$NScyKovumdn/C0nbRcOxThL37WEHFT+IF5JVvgpWHCQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "eric",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T09:44:14.006Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$wIcBoka4Pu6G$COr6/7aBGV+ve9lUJGrgWMfRNzS1sknfLt0eoiypmhQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kyle",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-26T09:44:50.574Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "articles.tag",
+  "pk": 1,
+  "fields": {
+    "slug": "tag1",
+    "body": "tag1"
+  }
+},
+{
+  "model": "articles.tag",
+  "pk": 2,
+  "fields": {
+    "slug": "tag3",
+    "body": "tag3"
+  }
+},
+{
+  "model": "articles.tag",
+  "pk": 3,
+  "fields": {
+    "slug": "tag2",
+    "body": "tag2"
+  }
+},
+{
+  "model": "articles.tag",
+  "pk": 4,
+  "fields": {
+    "slug": "tag4",
+    "body": "tag4"
+  }
+},
+{
+  "model": "articles.article",
+  "pk": 1,
+  "fields": {
+    "created_at": "2018-03-27T07:43:33.926Z",
+    "modified_at": "2018-03-27T08:15:42.609Z",
+    "slug": "my-very-first-article",
+    "title": "My very first article",
+    "body": "article body",
+    "author": 1,
+    "liked_by": [],
+    "disliked_by": [],
+    "tags": [
+      1,
+      2,
+      3,
+      4
+    ]
+  }
+},
+{
+  "model": "articles.comment",
+  "pk": 1,
+  "fields": {
+    "created_at": "2018-03-27T08:16:43.399Z",
+    "modified_at": "2018-03-27T08:16:43.399Z",
+    "title": "comment title",
+    "body": "comment body",
+    "article": 1,
+    "author": 2
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "about": "Nonsense string",
+    "pic": "http://somedomain.org/pic.jpg",
+    "followees": []
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "about": "",
+    "pic": "",
+    "followees": [
+      1,
+      3,
+      4
+    ]
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "about": "",
+    "pic": "",
+    "followees": []
+  }
+},
+{
+  "model": "profiles.profile",
+  "pk": 4,
+  "fields": {
+    "user": 4,
+    "about": "",
+    "pic": "",
+    "followees": []
+  }
+}
+]
