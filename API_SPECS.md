@@ -37,11 +37,11 @@ All data are returned in JSON format with content type header `Content-Type: app
 }
 ```
 
-### Single Article
+### Single Post
 
 ```JSON
 {
-  "article": {
+  "post": {
     "slug": "my-first-blog-post-by-kenny",
     "title": "My first blog post",
     "body": "Hello everyone...",
@@ -61,11 +61,11 @@ All data are returned in JSON format with content type header `Content-Type: app
 }
 ```
 
-### Multiple Articles
+### Multiple Posts
 
 ```JSON
 {
-  "articles":[{
+  "posts":[{
     "slug": "my-first-blog-post-by-kenny",
     "title": "My first blog post",
     "body": "Hello everyone...",
@@ -96,7 +96,7 @@ All data are returned in JSON format with content type header `Content-Type: app
       "following": false
     }
   }],
-  "articlesCount": 2
+  "postsCount": 2
 }
 ```
 
@@ -106,9 +106,10 @@ All data are returned in JSON format with content type header `Content-Type: app
 {
   "comment": {
     "id": 1,
-    "body": "This article is awesome!",
+    "body": "This post is awesome!",
     "createdAt": "2018-03-27T07:43:33.926Z",
     "modifiedAt": "2018-03-27T08:15:42.609Z",
+    "post": "my-first-blog-post-by-kenny",
     "author": {
       "username": "kenny",
       "following": false
@@ -123,9 +124,10 @@ All data are returned in JSON format with content type header `Content-Type: app
 {
   "comment": [{
     "id": 1,
+    "body": "This post is awesome!",
     "createdAt": "2018-03-27T07:43:33.926Z",
     "modifiedAt": "2018-03-27T08:15:42.609Z",
-    "body": "This article is awesome!",
+    "post": "my-first-blog-post-by-kenny",
     "author": {
       "username": "kenny",
       "following": false

@@ -1,77 +1,77 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from apps.articles.models import Article, Comment, Tag
+from apps.posts.models import Post, Comment, Tag
 
 from apps.profiles.models import Profile
 
 
-class ArticleModelTests(TestCase):
+class PostModelTests(TestCase):
 
     fixtures = ['db.json']
 
     def test_create_empty_title(self):
         author = Profile.objects.get(user__username='kenny')
-        article = Article(
+        post = Post(
             title='',
-            slug='second-article',
-            body='article body',
+            slug='second-post',
+            body='post body',
             author=author
         )
         with self.assertRaises(ValidationError):
-            article.full_clean()
+            post.full_clean()
 
     def test_create_empty_slug(self):
         author = Profile.objects.get(user__username='kenny')
-        article = Article(
-            title='Second article',
+        post = Post(
+            title='Second post',
             slug='',
-            body='article body',
+            body='post body',
             author=author
         )
         with self.assertRaises(ValidationError):
-            article.full_clean()
+            post.full_clean()
 
     def test_create_empty_body(self):
         author = Profile.objects.get(user__username='kenny')
-        article = Article(
-            title='Second article',
-            slug='second-article',
+        post = Post(
+            title='Second post',
+            slug='second-post',
             body='',
             author=author
         )
         with self.assertRaises(ValidationError):
-            article.full_clean()
+            post.full_clean()
 
     def test_create_no_author(self):
-        article = Article(
-            title='Second article',
-            slug='second-article',
-            body='article body',
+        post = Post(
+            title='Second post',
+            slug='second-post',
+            body='post body',
         )
         with self.assertRaises(ValidationError):
-            article.full_clean()
+            post.full_clean()
 
-    def test_create_duplicate_slug_article(self):
+    def test_create_duplicate_slug_post(self):
         author = Profile.objects.get(user__username='kenny')
-        article = Article(
+        post = Post(
             title='some title',
-            slug='my-very-first-article',
-            body='article body',
+            slug='my-very-first-post',
+            body='post body',
             author=author
         )
         with self.assertRaises(ValidationError):
-            article.full_clean()
+            post.full_clean()
 
     def test_str(self):
         author = Profile.objects.get(user__username='kenny')
-        article = Article.objects.create(
-            slug='the-first-article',
-            title='The first article',
+        post = Post.objects.create(
+            slug='the-first-post',
+            title='The first post',
             body='blah blah blah...',
             author=author
         )
-        self.assertEqual(str(article), article.title)
+        self.assertEqual(str(post), post.title)
 
 
 class CommentModelTests(TestCase):
