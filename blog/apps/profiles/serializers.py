@@ -6,7 +6,7 @@ from .models import Profile
 class ProfileSerializer(serializers.ModelSerializer):
     """
     Read-only serializer that returns information about the profile, and checks
-    if request owner follows it.
+    if request maker follows it.
     """
     username = serializers.CharField(source='user.username')
     following = serializers.SerializerMethodField()
@@ -18,7 +18,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_following(self, obj):
         """
-        Check if request owner follows profile viewed(obj).
+        Check if request maker follows profile viewed.
         """
         request = self.context.get('request', None)
         if request and request.user.is_authenticated:
