@@ -1,6 +1,6 @@
 # Blog API Specs
 
-This a specofication for a blog API.
+This a specification for a blog API.
 
 ### Authentication Header:
 
@@ -46,6 +46,8 @@ All data are returned in JSON format with content type header `Content-Type: app
     "title": "My first blog post",
     "body": "Hello everyone...",
     "tags": ["tag1", "tag2"],
+    "createdAt": "2018-03-27T07:43:33.926Z",
+    "modifiedAt": "2018-03-27T08:15:42.609Z",
     "favorited": false,
     "likes": 0,
     "dislikes": 0,
@@ -68,6 +70,8 @@ All data are returned in JSON format with content type header `Content-Type: app
     "title": "My first blog post",
     "body": "Hello everyone...",
     "tags": ["tag1", "tag2"],
+    "createdAt": "2018-03-27T07:43:33.926Z",
+    "modifiedAt": "2018-03-27T08:15:42.609Z",
     "favorited": false,
     "likes": 0,
     "dislikes": 0,
@@ -103,8 +107,8 @@ All data are returned in JSON format with content type header `Content-Type: app
   "comment": {
     "id": 1,
     "body": "This article is awesome!",
-    "createdAt": "2018-03-26T15:51:16.637Z",
-    "updatedAt": "2018-03-26T17:03:11.637Z",
+    "createdAt": "2018-03-27T07:43:33.926Z",
+    "modifiedAt": "2018-03-27T08:15:42.609Z",
     "author": {
       "username": "kenny",
       "following": false
@@ -119,8 +123,8 @@ All data are returned in JSON format with content type header `Content-Type: app
 {
   "comment": [{
     "id": 1,
-    "createdAt": "2018-03-26T03:22:56.637Z",
-    "updatedAt": "2018-03-26T03:22:56.637Z",
+    "createdAt": "2018-03-27T07:43:33.926Z",
+    "modifiedAt": "2018-03-27T08:15:42.609Z",
     "body": "This article is awesome!",
     "author": {
       "username": "kenny",
