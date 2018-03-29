@@ -33,33 +33,45 @@ class PostSerializerTests(TestCase):
     def test_serialize_post(self):
         post = Post.objects.first()
         serializer = PostSerializer(post)
-        self.assertEqual(post.slug, serializer.data['slug'])
-        self.assertEqual(post.body, serializer.data['body'])
-        self.assertEqual(post.title, serializer.data['title'])
-        self.assertEqual(post.author.user.username, serializer.data['author']['username'])
+        data = serializer.data
+        self.assertEqual(post.slug, data['slug'])
+        self.assertEqual(post.title, data['title'])
+        self.assertEqual(post.body, data['body'])
+        self.assertEqual(post.author.user.username, data['author']['username'])
+        self.assertEqual(post.get_likes(), data['likes'])
+        self.assertEqual(post.get_dislikes(), data['dislikes'])
+        self.assertEqual(post.tags.count(), len(data['tagList']))
 
     def test_serialize_multiple_posts(self):
+        # if test_serialize_post is working fine, there is no need to check
+        # every field of every entry, just total count and the first entry
         queryset = Post.objects.all()
-        serializer = PostSerializer(queryset, many=True)
-        self.assertEqual(len(serializer.data), queryset.count())
+        one_post = queryset.first()
+        qset_serializer = PostSerializer(queryset, many=True)
+        onepost_serializer = PostSerializer(one_post)
+        qset_data = qset_serializer.data
+        post_data = onepost_serializer.data
+        self.assertEqual(len(qset_data), queryset.count())
+        self.assertEqual(post_data, qset_data[0])
 
     def test_deserialize_with_tags(self):
         user = User.objects.get(username='kenny')
+        tags_list = ['sometag1', 'sometag2', 'sometag3']
         serializer = PostSerializer(
             data={
-                'tagList': ['ctag1', 'ctag2', 'ctag3'],
+                'tagList': tags_list,
                 'title': 'Some random title',
                 'body': 'Here goes post body',
             },
             context={'user': user}
         )
-        tags_before = Tag.objects.all().count()
         self.assertTrue(serializer.is_valid())
         serializer.save()
-        tags_after = Tag.objects.all().count()
-        self.assertEqual(tags_after, tags_before + 3)
         post = Post.objects.get(title='Some random title')
         self.assertEqual(post.tags.count(), 3)
+        tags_qset = Tag.objects.filter(body__in=tags_list)
+        for tag in tags_qset:
+            self.assertIn(tag, post.tags.all())
 
     def test_deserialize_without_tags(self):
         user = User.objects.get(username='kenny')
