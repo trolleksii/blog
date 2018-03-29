@@ -8,7 +8,7 @@ from apps.profiles.serializers import ProfileFolloweesSerializer, ProfileSeriali
 
 class ProfileSerializerTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['profiles.json']
 
     def test_get_profile_info_follows(self):
         follower = Profile.objects.get(user__username='kenny')
@@ -35,7 +35,7 @@ class ProfileSerializerTests(TestCase):
 
 class ProfileFolloweesSerializerTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['profiles.json']
 
     def test_get_followees(self):
         profile = Profile.objects.get(user__username='kenny')

@@ -8,7 +8,7 @@ from apps.profiles.models import Profile
 
 class PostModelTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['posts.json']
 
     def test_create_empty_title(self):
         author = Profile.objects.get(user__username='kenny')
@@ -76,7 +76,7 @@ class PostModelTests(TestCase):
 
 class CommentModelTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['posts.json']
 
     def test_str(self):
         comment = Comment.objects.first()

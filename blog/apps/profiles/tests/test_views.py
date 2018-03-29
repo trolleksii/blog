@@ -6,7 +6,7 @@ from apps.authentication.models import User
 
 class ProfileViewTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['profiles.json']
 
     def test_get_profile_info(self):
         # Kenny makes request to see Stan's profile
@@ -33,7 +33,7 @@ class ProfileViewTests(TestCase):
 
 class ProfileFollowViewTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['profiles.json']
 
     def test_follow_self(self):
         token = User.objects.get(username='kyle').token
@@ -92,7 +92,7 @@ class ProfileFollowViewTests(TestCase):
 
 class ProfileFolloweesViewTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['profiles.json']
 
     def test_get_empty_follows(self):
         token = User.objects.get(username='eric').token

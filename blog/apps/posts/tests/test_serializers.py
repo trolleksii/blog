@@ -7,7 +7,7 @@ from apps.posts.serializers import CommentSerializer, PostSerializer, TagSeriali
 
 class CommentSerializerTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['posts.json']
 
     def test_serialize_comment(self):
         comment = Comment.objects.first()
@@ -93,7 +93,7 @@ class CommentSerializerTests(TestCase):
 
 class PostSerializerTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['posts.json']
 
     def test_serialize_post(self):
         post = Post.objects.first()
@@ -189,7 +189,7 @@ class PostSerializerTests(TestCase):
 
 class TagSerializerTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['posts.json']
 
     def test_serialize_tag(self):
         text = 'testtag'

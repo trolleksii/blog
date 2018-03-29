@@ -81,7 +81,7 @@ class RegistrationViewTests(TestCase):
 
 class LoginViewTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['authentication.json']
 
     def test_user_login(self):
         data = json.dumps(
@@ -120,7 +120,7 @@ class LoginViewTests(TestCase):
 
 class UserViewTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['authentication.json']
 
     def test_get_user_info(self):
         token = User.objects.get(username='kenny').token

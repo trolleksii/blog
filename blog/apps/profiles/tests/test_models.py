@@ -6,7 +6,7 @@ from apps.profiles.models import Profile
 
 class ProfileModelTests(TestCase):
 
-    fixtures = ['db.json']
+    fixtures = ['profiles.json']
 
     def test_str_method(self):
         user = User.objects.get(username='kenny')
