@@ -1,29 +1,94 @@
 from django.test import TestCase
 
 from apps.authentication.models import User
-from apps.posts.models import Post, Tag
+from apps.posts.models import Comment, Post, Tag
 from apps.posts.serializers import CommentSerializer, PostSerializer, TagSerializer
 
 
 class CommentSerializerTests(TestCase):
 
+    fixtures = ['db.json']
+
     def test_serialize_comment(self):
-        pass
+        comment = Comment.objects.first()
+        serializer = CommentSerializer(comment)
+        data = serializer.data
+        self.assertEqual(data['id'], comment.pk)
+        self.assertEqual(data['title'], comment.title)
+        self.assertEqual(data['body'], comment.body)
+        self.assertEqual(data['author']['username'], comment.author.user.username)
 
     def test_serialize_multiple_comments(self):
-        pass
+        qset = Comment.objects.all()
+        comment = qset.first()
+        qset_serializer = CommentSerializer(qset, many=True)
+        comment_serializer = CommentSerializer(comment)
+        qset_data = qset_serializer.data
+        comment_data = comment_serializer.data
+        self.assertEqual(qset.count(), len(qset_data))
+        self.assertEqual(comment_data, qset_data[0])
 
     def test_deserialize_comment(self):
-        pass
+        user = User.objects.get(username='eric')
+        post = Post.objects.first()
+        data = {
+            'title': 'Test comment by eric',
+            'body': 'blah blah blah'
+        }
+        serializer = CommentSerializer(
+            data=data,
+            context={'user': user, 'post': post}
+        )
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        comment = Comment.objects.get(title=data['title'])
+        self.assertEqual(comment.body, data['body'])
+        self.assertEqual(comment.post.pk, post.pk)
+        self.assertEqual(comment.author.pk, user.profile.pk)
 
     def test_deserialize_comment_without_post(self):
-        pass
+        user = User.objects.get(username='eric')
+        data = {
+            'title': 'Test comment by eric',
+            'body': 'blah blah blah'
+        }
+        serializer = CommentSerializer(data=data, context={'user': user})
+        self.assertFalse(serializer.is_valid())
 
     def test_deserialize_comment_without_author(self):
-        pass
+        post = Post.objects.first().pk
+        data = {
+            'title': 'Test comment by eric',
+            'body': 'blah blah blah'
+        }
+        serializer = CommentSerializer(data=data, context={'post': post})
+        self.assertFalse(serializer.is_valid())
 
-    def test_deserialize_empty_comment(self):
-        pass
+    def test_deserialize_empty_title(self):
+        user = User.objects.get(username='eric')
+        post = Post.objects.first().pk
+        data = {
+            'title': '',
+            'body': 'blah blah blah'
+        }
+        serializer = CommentSerializer(
+            data=data,
+            context={'user': user, 'post': post}
+        )
+        self.assertFalse(serializer.is_valid())
+
+    def test_deserialize_empty_body(self):
+        user = User.objects.get(username='eric')
+        post = Post.objects.first().pk
+        data = {
+            'title': 'Test comment by eric',
+            'body': ''
+        }
+        serializer = CommentSerializer(
+            data=data,
+            context={'user': user, 'post': post}
+        )
+        self.assertFalse(serializer.is_valid())
 
 
 class PostSerializerTests(TestCase):
