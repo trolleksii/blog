@@ -35,6 +35,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """
+    Serialixer takes a string with Tag body or a list of strings, if many=True.
+    Deserializer returns a string representation of Tag or a list of them.
+    """
     class Meta:
         model = Tag
         fields = ['body', ]
@@ -49,6 +53,10 @@ class TagSerializer(serializers.ModelSerializer):
             'body': data,
             'slug': slugify(data)
         }
+
+    @property
+    def data(self):
+        return super(serializers.Serializer, self).data
 
     def to_representation(self, obj):
         return obj.body
