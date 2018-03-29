@@ -36,9 +36,6 @@ class LoginSerializer(serializers.Serializer):
         if user is None:
             msg = 'Incorrect credentials'
             raise serializers.ValidationError(msg)
-        if not user.is_active:
-            msg = 'This user has been deactivated'
-            raise serializers.ValidationError(msg)
         return {
             'username': user.username,
             'email': user.email,
