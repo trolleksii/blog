@@ -14,8 +14,7 @@ class RegisterSerializerTests(TestCase):
             'password': 'password',
         }
         serializer = RegistrationSerializer(data=data)
-        validity = serializer.is_valid()
-        self.assertEqual(validity, True)
+        self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.errors, {})
         serializer.save()
         users = User.objects.filter(username='User')
@@ -28,8 +27,7 @@ class RegisterSerializerTests(TestCase):
             'password': 'password',
         }
         serializer = RegistrationSerializer(data=data)
-        validity = serializer.is_valid()
-        self.assertEqual(validity, True)
+        self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.errors, {})
         reg_user = serializer.save()
         query_user = User.objects.get(username='User')
@@ -41,8 +39,7 @@ class RegisterSerializerTests(TestCase):
             'password': 'pass',
         }
         serializer = RegistrationSerializer(data=data)
-        validity = serializer.is_valid()
-        self.assertEqual(validity, False)
+        self.assertFalse(serializer.is_valid())
         self.assertNotEqual(serializer.errors, {})
         with self.assertRaises(AssertionError):
             serializer.save()
@@ -54,8 +51,7 @@ class RegisterSerializerTests(TestCase):
             'password': 'password',
         }
         serializer = RegistrationSerializer(data=data)
-        validity = serializer.is_valid()
-        self.assertEqual(validity, True)
+        self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.errors, {})
         user = serializer.save()
         self.assertIsNotNone(user.profile)
@@ -63,49 +59,32 @@ class RegisterSerializerTests(TestCase):
 
 class LoginSerializerTests(TestCase):
 
-    def setUp(self):
-        User.objects.create_user(**{
-            'username': 'SomeUser',
-            'password': 'SomePassword',
-            'email': 'someuser@somedomain.com'
-        })
-        inactiveuser = User.objects.create_user(**{
-            'username': 'InactiveUser',
-            'password': 'SomePassword',
-            'email': 'someuser@somedomain.com'
-        })
-        inactiveuser.is_active = False
-        inactiveuser.save()
+    fixtures = ['authentication.json']
 
     def test_login_returns_user_data(self):
         serializer = LoginSerializer(
-            data={'username': 'SomeUser', 'password': 'SomePassword'})
-        result = serializer.is_valid()
-        self.assertTrue(result)
+            data={'username': 'kenny', 'password': 'qwerty123'})
+        self.assertTrue(serializer.is_valid())
 
     def test_login_without_username(self):
         serializer = LoginSerializer(
-            data={'password': 'wrongPassword'})
-        result = serializer.is_valid()
-        self.assertFalse(result)
+            data={'password': 'qwerty123'})
+        self.assertFalse(serializer.is_valid())
 
     def test_login_without_password(self):
         serializer = LoginSerializer(
-            data={'username': 'SomeUser'})
-        result = serializer.is_valid()
-        self.assertFalse(result)
+            data={'username': 'kenny'})
+        self.assertFalse(serializer.is_valid())
 
     def test_login_with_wrong_password(self):
         serializer = LoginSerializer(
-            data={'username': 'SomeUser', 'password': 'wrongPassword'})
-        result = serializer.is_valid()
-        self.assertFalse(result)
+            data={'username': 'kenny', 'password': 'qwertyqwe'})
+        self.assertFalse(serializer.is_valid())
 
     def test_login_inactive_user(self):
         serializer = LoginSerializer(
-            data={'username': 'InactiveUser', 'password': 'SomePassword'})
-        result = serializer.is_valid()
-        self.assertFalse(result)
+            data={'username': 'inactive_user', 'password': 'qwerty123'})
+        self.assertFalse(serializer.is_valid())
 
 
 class UserSerializerTests(TestCase):
@@ -115,29 +94,25 @@ class UserSerializerTests(TestCase):
             'username': 'SomeUser',
             'password': 'SomePassword'
         })
-        result = reg_serializer.is_valid()
-        self.assertEqual(result, True)
+        self.assertTrue(reg_serializer.is_valid())
         self.user = reg_serializer.save()
 
     def test_user_partial_update(self):
         serializer = UserSerializer(
             self.user, data={'email': 'someuser@mail.com'}, partial=True)
-        result = serializer.is_valid()
-        self.assertEqual(result, True)
+        self.assertTrue(serializer.is_valid())
         serializer.save()
         self.assertEqual(self.user.email, 'someuser@mail.com')
 
     def test_update_require_all_data(self):
         serializer = UserSerializer(
             self.user, data={'email': 'someuser@mail.com'})
-        result = serializer.is_valid()
-        self.assertEqual(result, False)
+        self.assertFalse(serializer.is_valid())
         serializer = UserSerializer(self.user, data={
             'email': 'someuser@mail.com',
             'password': 'NewPassword'
         })
-        result = serializer.is_valid()
-        self.assertEqual(result, True)
+        self.assertTrue(serializer.is_valid())
 
     def test_changes_in_profile(self):
         serializer = UserSerializer(self.user, data={
@@ -146,9 +121,8 @@ class UserSerializerTests(TestCase):
             'pic': 'https://my.pic.com/my.png',
             'password': 'NewPassword'
         })
-        result = serializer.is_valid()
+        self.assertTrue(serializer.is_valid())
         serializer.save()
-        self.assertEqual(result, True)
         self.assertEqual(self.user.profile.pic, 'https://my.pic.com/my.png')
         self.assertEqual(self.user.profile.about, 'my about')
 
