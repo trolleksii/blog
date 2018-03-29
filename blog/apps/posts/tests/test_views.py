@@ -14,3 +14,7 @@ class TagViewTests(TestCase):
         response = self.client.get(reverse('posts:listtags_view'))
         data = set(response.data.get('tagList'))
         self.assertEqual(tags_list, data)
+
+
+class PostViewSetTests(TestCase):
+    pass
