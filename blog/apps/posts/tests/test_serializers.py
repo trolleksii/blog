@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from apps.authentication.models import User
 from apps.posts.models import Post, Tag
-from apps.posts.serializers import PostSerializer
+from apps.posts.serializers import CommentSerializer, PostSerializer, TagSerializer
 
 
 class CommentSerializerTests(TestCase):
@@ -112,17 +112,56 @@ class PostSerializerTests(TestCase):
 
 class TagSerializerTests(TestCase):
 
+    fixtures = ['db.json']
+
     def test_serialize_tag(self):
-        pass
+        text = 'testtag'
+        tag = Tag.objects.create(
+            body=text,
+            slug=text
+        )
+        serializer = TagSerializer(tag)
+        self.assertEqual(text, serializer.data)
 
     def test_serialize_multiple_tags(self):
-        pass
+        queryset = Tag.objects.all()
+        self.assertGreaterEqual(len(queryset), 2)
+        serializer = TagSerializer(queryset, many=True)
+        for pos, tag in enumerate(queryset):
+            self.assertEqual(tag.body, serializer.data[pos])
 
     def test_deserialize_tag(self):
-        pass
+        tag_body = 'qwerty'
+        serializer = TagSerializer(
+            data=tag_body,
+        )
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        tags = Tag.objects.filter(body=tag_body)
+        self.assertEqual(len(tags), 1)
 
-    def test_serialize_multiple_tag(self):
-        pass
+    def test_deserialize_multiple_tag(self):
+        tag_bodys = ['qwerty', 'asdfgh', 'zxcvbn']
+        serializer = TagSerializer(
+            data=tag_bodys,
+            many=True
+        )
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        tags = Tag.objects.filter(body__in=tag_bodys)
+        self.assertEqual(len(tags), 3)
 
-    def test_serialize_multiple_tags_with_duplicates(self):
-        pass
+    def test_deserialize_multiple_tags_with_duplicates(self):
+        Tag.objects.create(
+            body='asdfgh',
+            slug='asdfgh'
+        )
+        tag_bodys = ['qwerty', 'asdfgh', 'zxcvbn']
+        serializer = TagSerializer(
+            data=tag_bodys,
+            many=True
+        )
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        tags = Tag.objects.filter(body__in=tag_bodys)
+        self.assertEqual(len(tags), 3)
