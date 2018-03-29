@@ -8,13 +8,14 @@ from apps.profiles.serializers import ProfileSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    createdAt = serializers.DateTimeField(source='created_at')
-    modifiedAt = serializers.DateTimeField(source='modified_at')
+    createdAt = serializers.DateTimeField(source='created_at', read_only=True)
+    modifiedAt = serializers.DateTimeField(source='modified_at', read_only=True)
+    author = ProfileSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['title', 'body', 'createdAt', 'modifiedAt', 'author']
-        read_only_fields = ['createdAt', 'modifiedAt', 'author']
+        fields = ['id', 'title', 'body', 'createdAt', 'modifiedAt', 'author']
+        read_only_fields = ['id']
 
     def validate(self, args):
         user = self.context.get('user', None)
