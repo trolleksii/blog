@@ -6,7 +6,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from .models import Post
 from .serializers import PostSerializer, TagSerializer
@@ -101,3 +101,25 @@ class PostViewSet(ModelViewSet):
             context={'user': request.user}
         )
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
+
+    @detail_route(methods=['post', 'delete'], permission_classes=[IsAuthenticated], url_name='like')
+    def like(self, request, slug):
+        try:
+            post = self.serializer_class.Meta.model.objects.get(slug=slug)
+        except ObjectDoesNotExist:
+            raise Http404
+        operation_status = status.HTTP_403_FORBIDDEN
+        if post.author.user != request.user:
+            # user can't like/dislike his own posts
+            if not request.user.profile.has_voted_for(post):
+                # user votes only once, and can't change his vote
+                if self.request.method == 'POST':
+                    request.user.profile.like(post)
+                else:
+                    request.user.profile.dislike(post)
+                operation_status = status.HTTP_200_OK
+        serializer = self.serializer_class(
+            post,
+            context={'user': request.user}
+        )
+        return Response({'post': serializer.data}, status=operation_status)
