@@ -18,8 +18,6 @@ class Post(TimeStampedModel):
     title = models.CharField(max_length=128, blank=False)
     body = models.TextField(max_length=1000, blank=False)
     author = models.ForeignKey(Profile, related_name='posts', on_delete=models.CASCADE)
-    liked_by = models.ManyToManyField(Profile, related_name='liked_posts')
-    disliked_by = models.ManyToManyField(Profile, related_name='disliked_posts')
     tags = models.ManyToManyField(Tag, related_name='posts')
 
     def __str__(self):

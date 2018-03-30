@@ -9,6 +9,8 @@ class Profile(models.Model):
     pic = models.URLField(blank=True)
     followees = models.ManyToManyField('self', related_name='followers', symmetrical=False)
     favorites = models.ManyToManyField('posts.Post', related_name='favorited_by')
+    liked_posts = models.ManyToManyField('posts.Post', related_name='liked_by')
+    disliked_posts = models.ManyToManyField('posts.Post', related_name='disliked_by')
 
     def __str__(self):
         return self.user.username
@@ -36,5 +38,11 @@ class Profile(models.Model):
             return self.followees.filter(pk=profile.pk).exists()
         return False
 
-    # def is_in_followers(self, profile):
-    #     return self.followers.filter(pk=profile.pk).exists()
+    def like(self, post):
+        self.liked_posts.add(post)
+
+    def dislike(self, post):
+        self.disliked_posts.add(post)
+
+    def has_voted_for(self, post):
+        return self.liked_posts.filter(pk=post.pk).exists() or self.disliked_posts.filter(pk=post.pk).exists()
