@@ -103,6 +103,16 @@ class PostSerializer(serializers.ModelSerializer):
             post.tags.add(tag)
         return post
 
+    def update(self, instance, validated_data):
+        tag_data_list = validated_data.pop('tags', [])
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        instance.tags.all().delete()
+        for tag_data in tag_data_list:
+            tag = Tag.objects.get_or_create(**tag_data)[0]
+            instance.tags.add(tag)
+        return instance
+
     def get_likes(self, post):
         return post.get_likes()
 
