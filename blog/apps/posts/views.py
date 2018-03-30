@@ -6,10 +6,11 @@ from rest_framework.decorators import detail_route
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.generics import ListCreateAPIView, DestroyAPIView
+from rest_framework.viewsets import ModelViewSet
 
 from .models import Post
-from .serializers import PostSerializer, TagSerializer
+from .serializers import CommentSerializer, PostSerializer, TagSerializer
 
 
 class ListTagsAPIView(APIView):
@@ -123,3 +124,22 @@ class PostViewSet(ModelViewSet):
             context={'user': request.user}
         )
         return Response({'post': serializer.data}, status=operation_status)
+
+
+class CommentListCreateAPIView(ListCreateAPIView):
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+    serializer_class = CommentSerializer
+
+    def list(self, request, slug, *args, **kwargs):
+        pass
+
+    def create(self, request, slug, *args, **kwargs):
+        pass
+
+
+class CommentDestroyAPIView(DestroyAPIView):
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+    serializer_class = CommentSerializer
+
+    def destroy(self, request, slug, pk, *args, **kwargs):
+        pass
