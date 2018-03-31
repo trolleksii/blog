@@ -137,8 +137,7 @@ class CommentDestroyAPIView(DestroyAPIView):
     serializer_class = CommentSerializer
 
     def destroy(self, request, slug, pk, *args, **kwargs):
-        post = get_object_or_404(Post, slug=slug)
-        comment = post.comments.get(pk=pk)
+        comment = get_object_or_404(Comment, post__slug=slug, pk=pk)
         if comment.author != request.user.profile:
             return Response(status=status.HTTP_403_FORBIDDEN)
         comment.delete()
