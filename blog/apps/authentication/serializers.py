@@ -24,18 +24,11 @@ class LoginSerializer(serializers.Serializer):
     token = serializers.CharField(read_only=True)
 
     def validate(self, attrs):
-        username = attrs.get('username', None)
-        password = attrs.get('password', None)
-        if username is None:
-            msg = 'Username is required to log in'
-            raise serializers.ValidationError(msg)
-        if password is None:
-            msg = 'Password is required to log in'
-            raise serializers.ValidationError(msg)
+        username = attrs.get('username', '')
+        password = attrs.get('password', '')
         user = authenticate(username=username, password=password)
         if user is None:
-            msg = 'Incorrect credentials'
-            raise serializers.ValidationError(msg)
+            raise serializers.ValidationError('Incorrect credentials')
         return {
             'username': user.username,
             'email': user.email,
@@ -92,8 +85,8 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password', None)
         # extract profile-related data
         profile = validated_data.pop('profile', {})
-        for key in validated_data:
-            setattr(instance, key, validated_data[key])
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
         if password:
             instance.set_password(password)
         # reflect changes in user profile
