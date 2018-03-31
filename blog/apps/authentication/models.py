@@ -11,23 +11,12 @@ class User(AbstractUser):
     """
     User with JWT.
     Token validity time is 24 hours by default. You can specify custom time in
-    hours by:
-        1. Adding parameter `token_valid_for` on initialization of class object
-        2. Adding parameter `TOKEN_VALID_FOR` to the project config file
+    hours by adding parameter `token_valid_for` on initialization of class object.
     """
 
     def __init__(self, *args, **kwargs):
         token_valid_for = kwargs.pop('token_valid_for', 24)
         super(User, self).__init__(*args, **kwargs)
-        try:
-            from blog.settings import TOKEN_VALID_FOR
-            token_valid_for = int(TOKEN_VALID_FOR)
-        except ImportError:
-            # not configured
-            pass
-        except ValueError:
-            # parameter is no convertable to int
-            pass
         setattr(self, 'token_valid_for', token_valid_for)
 
     @property
