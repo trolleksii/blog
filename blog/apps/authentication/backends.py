@@ -3,7 +3,9 @@ import jwt
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.authentication import BaseAuthentication, get_authorization_header, exceptions
+from rest_framework.authentication import (
+    BaseAuthentication, get_authorization_header, exceptions
+)
 
 from blog.settings import SECRET_KEY as secret
 from .models import User
@@ -13,9 +15,10 @@ class JWTAuthentication(BaseAuthentication):
     """
     Simple JWT based authentication.
 
-    Clients should authenticate by passing the JWT token key in the "Authorization"
-    HTTP header, prepended with the string "Token ".  For example:
-        Authorization: Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NSwiZXhwIjoxNTIwMzQ5NDE3fQ.D7Z85grxfZHO4r4-mfLzKX43RGSCWqaLexujEf-cdvI
+    Clients should authenticate by passing the JWT token key in the
+    "Authorization" HTTP header, prepended with the string "Token ".
+    For example:
+        Authorization: Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9....
     """
 
     keyword = 'Token'
@@ -39,7 +42,6 @@ class JWTAuthentication(BaseAuthentication):
             payload = jwt.decode(token, secret, algorithms=self.ALGORITHMS)
         except Exception as e:
             raise exceptions.AuthenticationFailed(e)
-
         return self.authenticate_credentials(payload['id'])
 
     def authenticate_credentials(self, pk):
