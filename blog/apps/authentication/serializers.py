@@ -43,6 +43,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
     Handles user registration process. In addition creates a profile
     for each added user.
     """
+    about = serializers.CharField(source='profile.about', read_only=True)
+    pic = serializers.URLField(source='profile.pic', read_only=True)
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'token']
