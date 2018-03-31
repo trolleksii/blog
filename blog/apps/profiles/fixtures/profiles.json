@@ -3,7 +3,7 @@
   "model": "authentication.user",
   "pk": 1,
   "fields": {
-    "password": "pbkdf2_sha256$100000$CZSmABYJwi64$+hPrg1BPtKU4WQpZ725rYnqquRul8jR0JkInY87zGaM=",
+    "password": "pbkdf2_sha256$100000$PROyVNZAh2J9$6WYvOpuAB0Kc5PVd+XbVjcTyXcSjn4OigqlUVGT0ASU=",
     "last_login": null,
     "is_superuser": false,
     "username": "kenny",
@@ -12,7 +12,7 @@
     "email": "",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2018-03-26T07:16:29.316Z",
+    "date_joined": "2018-03-31T07:18:38.428Z",
     "groups": [],
     "user_permissions": []
   }
@@ -21,43 +21,7 @@
   "model": "authentication.user",
   "pk": 2,
   "fields": {
-    "password": "pbkdf2_sha256$100000$xk3g5DNodPEP$1afC9lug7SRYl0bEc3Q9Q4LoDW2dpMYDvsrn8ecEJIo=",
-    "last_login": null,
-    "is_superuser": false,
-    "username": "stan",
-    "first_name": "",
-    "last_name": "",
-    "email": "",
-    "is_staff": false,
-    "is_active": true,
-    "date_joined": "2018-03-26T09:14:51.311Z",
-    "groups": [],
-    "user_permissions": []
-  }
-},
-{
-  "model": "authentication.user",
-  "pk": 3,
-  "fields": {
-    "password": "pbkdf2_sha256$100000$hc4LSPQt14o2$NScyKovumdn/C0nbRcOxThL37WEHFT+IF5JVvgpWHCQ=",
-    "last_login": null,
-    "is_superuser": false,
-    "username": "eric",
-    "first_name": "",
-    "last_name": "",
-    "email": "",
-    "is_staff": false,
-    "is_active": true,
-    "date_joined": "2018-03-26T09:44:14.006Z",
-    "groups": [],
-    "user_permissions": []
-  }
-},
-{
-  "model": "authentication.user",
-  "pk": 4,
-  "fields": {
-    "password": "pbkdf2_sha256$100000$wIcBoka4Pu6G$COr6/7aBGV+ve9lUJGrgWMfRNzS1sknfLt0eoiypmhQ=",
+    "password": "pbkdf2_sha256$100000$Cphxd9uZLJJ2$gvh9Z6PvRj0vCItzI6g8FphLto2g+pB3cCA0d8Z6r7o=",
     "last_login": null,
     "is_superuser": false,
     "username": "kyle",
@@ -66,9 +30,40 @@
     "email": "",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2018-03-26T09:44:50.574Z",
+    "date_joined": "2018-03-31T07:18:48.348Z",
     "groups": [],
     "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$xrZYDQVAm9Sz$pe7CkwPEmQp6HJmUfu+hSnuA96Nj07SvdSgVNMNn9S8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "stan",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-31T07:18:44.438Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 1,
+  "fields": {
+    "created_at": "2018-03-31T07:47:41.041Z",
+    "modified_at": "2018-03-31T07:47:41.041Z",
+    "slug": "the-best-coffe-in-the-world",
+    "title": "The best coffe in the world",
+    "body": "Colombian coffee is the best cofee in the world!",
+    "author": 1,
+    "tags": []
   }
 },
 {
@@ -76,13 +71,15 @@
   "pk": 1,
   "fields": {
     "user": 1,
-    "about": "Nonsense string",
-    "pic": "http://somedomain.org/pic.jpg",
+    "about": "",
+    "pic": "",
     "followees": [
       2,
-      3,
-      4
-    ]
+      3
+    ],
+    "favorites": [],
+    "liked_posts": [],
+    "disliked_posts": []
   }
 },
 {
@@ -92,7 +89,12 @@
     "user": 2,
     "about": "",
     "pic": "",
-    "followees": []
+    "followees": [],
+    "favorites": [
+      1
+    ],
+    "liked_posts": [],
+    "disliked_posts": []
   }
 },
 {
@@ -102,17 +104,10 @@
     "user": 3,
     "about": "",
     "pic": "",
-    "followees": []
-  }
-},
-{
-  "model": "profiles.profile",
-  "pk": 4,
-  "fields": {
-    "user": 4,
-    "about": "",
-    "pic": "",
-    "followees": []
+    "followees": [],
+    "favorites": [],
+    "liked_posts": [],
+    "disliked_posts": []
   }
 }
 ]
