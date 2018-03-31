@@ -3,7 +3,7 @@
   "model": "authentication.user",
   "pk": 1,
   "fields": {
-    "password": "pbkdf2_sha256$100000$CZSmABYJwi64$+hPrg1BPtKU4WQpZ725rYnqquRul8jR0JkInY87zGaM=",
+    "password": "pbkdf2_sha256$100000$PROyVNZAh2J9$6WYvOpuAB0Kc5PVd+XbVjcTyXcSjn4OigqlUVGT0ASU=",
     "last_login": null,
     "is_superuser": false,
     "username": "kenny",
@@ -12,7 +12,7 @@
     "email": "",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2018-03-26T07:16:29.316Z",
+    "date_joined": "2018-03-31T07:18:38.428Z",
     "groups": [],
     "user_permissions": []
   }
@@ -21,7 +21,7 @@
   "model": "authentication.user",
   "pk": 2,
   "fields": {
-    "password": "pbkdf2_sha256$100000$xk3g5DNodPEP$1afC9lug7SRYl0bEc3Q9Q4LoDW2dpMYDvsrn8ecEJIo=",
+    "password": "pbkdf2_sha256$100000$xrZYDQVAm9Sz$pe7CkwPEmQp6HJmUfu+hSnuA96Nj07SvdSgVNMNn9S8=",
     "last_login": null,
     "is_superuser": false,
     "username": "stan",
@@ -30,7 +30,7 @@
     "email": "",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2018-03-26T09:14:51.311Z",
+    "date_joined": "2018-03-31T07:18:44.438Z",
     "groups": [],
     "user_permissions": []
   }
@@ -39,25 +39,7 @@
   "model": "authentication.user",
   "pk": 3,
   "fields": {
-    "password": "pbkdf2_sha256$100000$hc4LSPQt14o2$NScyKovumdn/C0nbRcOxThL37WEHFT+IF5JVvgpWHCQ=",
-    "last_login": null,
-    "is_superuser": false,
-    "username": "eric",
-    "first_name": "",
-    "last_name": "",
-    "email": "",
-    "is_staff": false,
-    "is_active": true,
-    "date_joined": "2018-03-26T09:44:14.006Z",
-    "groups": [],
-    "user_permissions": []
-  }
-},
-{
-  "model": "authentication.user",
-  "pk": 4,
-  "fields": {
-    "password": "pbkdf2_sha256$100000$wIcBoka4Pu6G$COr6/7aBGV+ve9lUJGrgWMfRNzS1sknfLt0eoiypmhQ=",
+    "password": "pbkdf2_sha256$100000$Cphxd9uZLJJ2$gvh9Z6PvRj0vCItzI6g8FphLto2g+pB3cCA0d8Z6r7o=",
     "last_login": null,
     "is_superuser": false,
     "username": "kyle",
@@ -66,7 +48,25 @@
     "email": "",
     "is_staff": false,
     "is_active": true,
-    "date_joined": "2018-03-26T09:44:50.574Z",
+    "date_joined": "2018-03-31T07:18:48.348Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$100000$LIYcjWaR790y$HqhStg0yBiEu0wCglrSXk00DDBhdZqSAaa0cnjjTl4w=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "eric",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-03-31T07:18:52.357Z",
     "groups": [],
     "user_permissions": []
   }
@@ -75,57 +75,46 @@
   "model": "posts.tag",
   "pk": 1,
   "fields": {
-    "slug": "tag1",
-    "body": "tag1"
+    "slug": "coffee",
+    "body": "coffee"
   }
 },
 {
   "model": "posts.tag",
   "pk": 2,
   "fields": {
-    "slug": "tag3",
-    "body": "tag3"
+    "slug": "beer",
+    "body": "beer"
   }
 },
 {
   "model": "posts.tag",
   "pk": 3,
   "fields": {
-    "slug": "tag2",
-    "body": "tag2"
+    "slug": "alcohol",
+    "body": "alcohol"
   }
 },
 {
   "model": "posts.tag",
   "pk": 4,
   "fields": {
-    "slug": "tag4",
-    "body": "tag4"
+    "slug": "revelations",
+    "body": "revelations"
   }
 },
 {
   "model": "posts.post",
   "pk": 1,
   "fields": {
-    "created_at": "2018-03-27T07:43:33.926Z",
-    "modified_at": "2018-03-27T08:15:42.609Z",
-    "slug": "my-very-first-post",
-    "title": "My very first post",
-    "body": "post body",
+    "created_at": "2018-03-31T07:47:41.041Z",
+    "modified_at": "2018-03-31T07:47:41.041Z",
+    "slug": "the-best-coffe-in-the-world",
+    "title": "The best coffe in the world",
+    "body": "Colombian coffee is the best cofee in the world!",
     "author": 1,
-    "liked_by": [
-      1,
-      2,
-      3
-    ],
-    "disliked_by": [
-      4
-    ],
     "tags": [
-      1,
-      2,
-      3,
-      4
+      1
     ]
   }
 },
@@ -133,18 +122,29 @@
   "model": "posts.post",
   "pk": 2,
   "fields": {
-    "created_at": "2018-03-28T07:43:33.926Z",
-    "modified_at": "2018-03-28T08:15:42.609Z",
-    "slug": "my-second-post",
-    "title": "My second post",
-    "body": "second post body",
+    "created_at": "2018-03-31T07:49:27.408Z",
+    "modified_at": "2018-03-31T07:49:27.408Z",
+    "slug": "the-best-beer-in-the-world",
+    "title": "The best beer in the world",
+    "body": "Certainly, belgians brew the best beer in the world!",
     "author": 1,
-    "liked_by": [],
-    "disliked_by": [],
     "tags": [
-      1,
       2,
-      3,
+      3
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 3,
+  "fields": {
+    "created_at": "2018-03-31T07:59:56.085Z",
+    "modified_at": "2018-03-31T07:59:56.085Z",
+    "slug": "kenny-is-a-bad-writer",
+    "title": "Kenny is a bad writer",
+    "body": "Kennys posts worth nothing!",
+    "author": 4,
+    "tags": [
       4
     ]
   }
@@ -153,23 +153,83 @@
   "model": "posts.comment",
   "pk": 1,
   "fields": {
-    "created_at": "2018-03-27T08:16:43.399Z",
-    "modified_at": "2018-03-27T08:16:43.399Z",
-    "title": "comment title",
-    "body": "comment body",
+    "created_at": "2018-03-31T09:02:11.949Z",
+    "modified_at": "2018-03-31T09:02:11.949Z",
+    "title": "Completely agree",
+    "body": "of all coffees I've tried, colombian was the best",
+    "post": 1,
+    "author": 3
+  }
+},
+{
+  "model": "posts.comment",
+  "pk": 2,
+  "fields": {
+    "created_at": "2018-03-31T09:03:23.121Z",
+    "modified_at": "2018-03-31T09:03:23.121Z",
+    "title": "Thank you!",
+    "body": "Thanks for the advice, I'll definitely give it a try!",
     "post": 1,
     "author": 2
   }
 },
 {
   "model": "posts.comment",
-  "pk": 2,
+  "pk": 3,
   "fields": {
-    "created_at": "2018-03-27T08:17:43.399Z",
-    "modified_at": "2018-03-27T08:17:43.399Z",
-    "title": "another comment title",
-    "body": "another comment body",
+    "created_at": "2018-03-31T09:05:01.043Z",
+    "modified_at": "2018-03-31T09:05:01.043Z",
+    "title": "It depends",
+    "body": "If you like fruity notes you'd probably try Kenyan",
     "post": 1,
+    "author": 4
+  }
+},
+{
+  "model": "posts.comment",
+  "pk": 4,
+  "fields": {
+    "created_at": "2018-03-31T09:06:03.309Z",
+    "modified_at": "2018-03-31T09:06:03.309Z",
+    "title": "Nice to see you here",
+    "body": "Thank you for comments!",
+    "post": 1,
+    "author": 1
+  }
+},
+{
+  "model": "posts.comment",
+  "pk": 6,
+  "fields": {
+    "created_at": "2018-03-31T11:01:19.446Z",
+    "modified_at": "2018-03-31T11:01:19.446Z",
+    "title": "just stop it",
+    "body": "stop littering this blog",
+    "post": 3,
+    "author": 1
+  }
+},
+{
+  "model": "posts.comment",
+  "pk": 7,
+  "fields": {
+    "created_at": "2018-03-31T11:02:54.434Z",
+    "modified_at": "2018-03-31T11:02:54.434Z",
+    "title": "no way",
+    "body": "Just telling the truth",
+    "post": 3,
+    "author": 4
+  }
+},
+{
+  "model": "posts.comment",
+  "pk": 8,
+  "fields": {
+    "created_at": "2018-03-31T11:04:42.266Z",
+    "modified_at": "2018-03-31T11:04:42.266Z",
+    "title": "kenny is the best",
+    "body": "Don't listen to him Ken. his a moron",
+    "post": 3,
     "author": 2
   }
 },
@@ -178,9 +238,17 @@
   "pk": 1,
   "fields": {
     "user": 1,
-    "about": "Nonsense string",
-    "pic": "http://somedomain.org/pic.jpg",
-    "followees": []
+    "about": "",
+    "pic": "",
+    "followees": [
+      2,
+      3
+    ],
+    "favorites": [],
+    "liked_posts": [],
+    "disliked_posts": [
+      3
+    ]
   }
 },
 {
@@ -192,8 +260,18 @@
     "pic": "",
     "followees": [
       1,
-      3,
-      4
+      3
+    ],
+    "favorites": [
+      1,
+      2
+    ],
+    "liked_posts": [
+      1,
+      2
+    ],
+    "disliked_posts": [
+      3
     ]
   }
 },
@@ -204,7 +282,20 @@
     "user": 3,
     "about": "",
     "pic": "",
-    "followees": []
+    "followees": [
+      1,
+      2
+    ],
+    "favorites": [
+      1
+    ],
+    "liked_posts": [
+      1,
+      2
+    ],
+    "disliked_posts": [
+      3
+    ]
   }
 },
 {
@@ -214,7 +305,13 @@
     "user": 4,
     "about": "",
     "pic": "",
-    "followees": []
+    "followees": [],
+    "favorites": [],
+    "liked_posts": [],
+    "disliked_posts": [
+      1,
+      2
+    ]
   }
 }
 ]
