@@ -1,6 +1,5 @@
 import jwt
 
-from time import sleep
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
@@ -37,7 +36,7 @@ class AuthModelTests(TestCase):
             user.full_clean()
 
     def test_cant_create_duplicate(self):
-        User.objects.create(
+        User.objects.create_user(
             username='TestUser',
             password='qwerty123'
         )
@@ -48,31 +47,12 @@ class AuthModelTests(TestCase):
             )
             user.full_clean()
 
-    def test_jwt_is_generated(self):
-        user = User.objects.create(
+    def test_jwt_is_correct(self):
+        user = User.objects.create_user(
             username='TestUser',
             password='qwerty123'
         )
         self.assertIsNotNone(user.token)
-
-    def test_jwt_decodes(self):
-        user = User.objects.create(
-            username='TestUser',
-            password='qwerty123'
-        )
         expected_pk = user.pk
         data = jwt.decode(user.token, SECRET_KEY, algorithms=['HS256'])
         self.assertEqual(data['id'], expected_pk)
-
-    def test_expired_token(self):
-        user = User(
-            username='TestUser',
-            password='qwerty123',
-            token_valid_for=0
-        )
-        user.full_clean()
-        user.save()
-        token = user.token
-        sleep(1)
-        with self.assertRaises(jwt.exceptions.ExpiredSignatureError):
-            jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
