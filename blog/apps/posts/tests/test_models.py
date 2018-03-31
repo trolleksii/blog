@@ -54,14 +54,15 @@ class PostModelTests(TestCase):
 
     def test_create_duplicate_slug_post(self):
         author = Profile.objects.get(user__username='kenny')
-        post = Post(
-            title='some title',
-            slug='my-very-first-post',
+        post = Post.objects.first()
+        duplicate_post = Post(
+            title='some other title',
+            slug=post.slug,
             body='post body',
             author=author
         )
         with self.assertRaises(ValidationError):
-            post.full_clean()
+            duplicate_post.full_clean()
 
     def test_str(self):
         author = Profile.objects.get(user__username='kenny')
