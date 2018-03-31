@@ -15,7 +15,7 @@ class ProfileView(views.APIView):
     serializer_class = ProfileSerializer
 
     def get(self, request, username, *args, **kwargs):
-        profile = get_object_or_404(Profile, username=username)
+        profile = get_object_or_404(Profile, user__username=username)
         serializer = self.serializer_class(profile, context={'user': request.user})
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
 
@@ -30,14 +30,14 @@ class ProfileFollowView(views.APIView):
 
     def post(self, request, username, *args, **kwargs):
         follower = request.user.profile
-        followee = get_object_or_404(Profile, username=username)
+        followee = get_object_or_404(Profile, user__username=username)
         follower.follow(followee)
         serializer = self.serializer_class(followee, context={'user': request.user})
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
 
     def delete(self, request, username, *args, **kwargs):
         follower = request.user.profile
-        followee = get_object_or_404(Profile, username=username)
+        followee = get_object_or_404(Profile, user__username=username)
         follower.unfollow(followee)
         serializer = self.serializer_class(followee, context={'user': request.user})
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
