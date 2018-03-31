@@ -1,4 +1,5 @@
 from django.utils.text import slugify
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
@@ -8,13 +9,13 @@ from apps.profiles.serializers import ProfileSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    createdAt = serializers.DateTimeField(source='created_at', read_only=True)
-    modifiedAt = serializers.DateTimeField(source='modified_at', read_only=True)
     author = ProfileSerializer(read_only=True)
+    createdAt = serializers.SerializerMethodField(method_name='get_created_at')
+    updatedAt = serializers.SerializerMethodField(method_name='get_updated_at')
 
     class Meta:
         model = Comment
-        fields = ['id', 'title', 'body', 'createdAt', 'modifiedAt', 'author']
+        fields = ['id', 'title', 'body', 'createdAt', 'updatedAt', 'author']
         read_only_fields = ['id']
 
     def validate(self, args):
@@ -34,6 +35,12 @@ class CommentSerializer(serializers.ModelSerializer):
         args['post'] = post
         return args
 
+    def get_created_at(self, comment):
+        return str(comment.created_at)
+
+    def get_updated_at(self, comment):
+        return str(comment.modified_at)
+
 
 class TagSerializer(serializers.ModelSerializer):
     """
@@ -46,7 +53,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         if not isinstance(data, str):
-            message = 'expected list of strings, got list of {}'.format(type(data))
+            message = 'expected a string, but got a {}'.format(type(data))
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='invalid')
