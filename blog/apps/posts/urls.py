@@ -15,5 +15,5 @@ router.register(r'posts', PostViewSet, base_name='post')
 urlpatterns = [
     re_path(r'^tags$', ListTagsAPIView.as_view(), name='listtags_view'),
     re_path(r'^posts/(?P<slug>[^/.]+)/comments$', CommentListCreateAPIView.as_view(), name='comments_view'),
-    re_path(r'^posts/(?P<slug>[^/.]+)/comments/(?P<id>\d+)$', CommentDestroyAPIView.as_view(), name='comments_del_view'),
+    re_path(r'^posts/(?P<slug>[^/.]+)/comments/(?P<pk>\d+)$', CommentDestroyAPIView.as_view(), name='comments_del_view'),
 ] + router.urls
