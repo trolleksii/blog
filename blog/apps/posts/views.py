@@ -1,24 +1,22 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from rest_framework import status
 from rest_framework.decorators import detail_route
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.generics import ListCreateAPIView, DestroyAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, DestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from .models import Post
+from .models import Comment, Post, Tag
 from .serializers import CommentSerializer, PostSerializer, TagSerializer
 
 
-class ListTagsAPIView(APIView):
+class ListTagsAPIView(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = TagSerializer
 
-    def get(self, request):
-        queryset = self.serializer_class.Meta.model.objects.all()
+    def list(self, request):
+        queryset = Tag.objects.all()
         serializer = self.serializer_class(queryset, many=True)
         return Response({'tagList': serializer.data}, status=status.HTTP_200_OK)
 
@@ -41,14 +39,11 @@ class PostViewSet(ModelViewSet):
 
     def update(self, request, slug, *args, **kwargs):
         data = request.data.get('post', {})
-        try:
-            instance = self.serializer_class.Meta.model.objects.get(slug=slug)
-        except ObjectDoesNotExist:
-            raise Http404
-        if instance.author != request.user.profile:
+        post = get_object_or_404(Post, slug=slug)
+        if post.author != request.user.profile:
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         serializer = self.serializer_class(
-            instance,
+            post,
             data=data,
             context={'user': request.user},
             partial=True
@@ -67,32 +62,23 @@ class PostViewSet(ModelViewSet):
         return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
 
     def destroy(self, request, slug, *args, **kwargs):
-        try:
-            post = self.serializer_class.Meta.model.objects.get(slug=slug)
-        except ObjectDoesNotExist:
-            raise Http404
+        post = get_object_or_404(Post, slug=slug)
         if post.author != request.user.profile:
             return Response({}, status=status.HTTP_403_FORBIDDEN)
         post.delete()
         return Response('', status=status.HTTP_200_OK)
 
     def retrieve(self, request, slug, *args, **kwargs):
-        try:
-            instance = self.serializer_class.Meta.model.objects.get(slug=slug)
-        except ObjectDoesNotExist:
-            raise Http404
+        post = get_object_or_404(Post, slug=slug)
         serializer = self.serializer_class(
-            instance,
+            post,
             context={'user': request.user}
         )
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
     @detail_route(methods=['post', 'delete'], permission_classes=[IsAuthenticated], url_name='favorite')
     def favorite(self, request, slug):
-        try:
-            post = self.serializer_class.Meta.model.objects.get(slug=slug)
-        except ObjectDoesNotExist:
-            raise Http404
+        post = get_object_or_404(Post, slug=slug)
         if self.request.method == 'POST':
             request.user.profile.favorite(post)
         else:
@@ -105,11 +91,7 @@ class PostViewSet(ModelViewSet):
 
     @detail_route(methods=['post', 'delete'], permission_classes=[IsAuthenticated], url_name='like')
     def like(self, request, slug):
-        try:
-            post = self.serializer_class.Meta.model.objects.get(slug=slug)
-        except ObjectDoesNotExist:
-            raise Http404
-        operation_status = status.HTTP_403_FORBIDDEN
+        post = get_object_or_404(Post, slug=slug)
         if post.author.user != request.user:
             # user can't like/dislike his own posts
             if not request.user.profile.has_voted_for(post):
@@ -118,12 +100,11 @@ class PostViewSet(ModelViewSet):
                     request.user.profile.like(post)
                 else:
                     request.user.profile.dislike(post)
-                operation_status = status.HTTP_200_OK
         serializer = self.serializer_class(
             post,
             context={'user': request.user}
         )
-        return Response({'post': serializer.data}, status=operation_status)
+        return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
 
 class CommentListCreateAPIView(ListCreateAPIView):
@@ -131,10 +112,24 @@ class CommentListCreateAPIView(ListCreateAPIView):
     serializer_class = CommentSerializer
 
     def list(self, request, slug, *args, **kwargs):
-        pass
+        post = get_object_or_404(Post, slug=slug)
+        qset = Comment.objects.filter(post=post)
+        serializer = self.serializer_class(
+            qset,
+            context={'user': request.user},
+            many=True)
+        return Response({'comments': serializer.data}, status=status.HTTP_200_OK)
 
     def create(self, request, slug, *args, **kwargs):
-        pass
+        post = get_object_or_404(Post, slug=slug)
+        data = request.data.get('comment', {})
+        serializer = self.serializer_class(
+            data=data,
+            context={'user': request.user, 'post': post}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'comment': serializer.data}, status=status.HTTP_201_CREATED)
 
 
 class CommentDestroyAPIView(DestroyAPIView):
@@ -142,4 +137,9 @@ class CommentDestroyAPIView(DestroyAPIView):
     serializer_class = CommentSerializer
 
     def destroy(self, request, slug, pk, *args, **kwargs):
-        pass
+        post = get_object_or_404(Post, slug=slug)
+        comment = post.comments.get(pk=pk)
+        if comment.author != request.user.profile:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        comment.delete()
+        return Response(status=status.HTTP_200_OK)
