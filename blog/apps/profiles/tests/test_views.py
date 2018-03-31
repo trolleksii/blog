@@ -50,12 +50,12 @@ class ProfileFollowViewTests(TestCase):
         self.assertFalse(data['following'])
 
     def test_follow_profile(self):
-        token = User.objects.get(username='kyle').token
+        token = User.objects.get(username='kenny').token
         headers = {
             'HTTP_AUTHORIZATION': 'Token ' + token
         }
         response = self.client.post(
-            reverse('profiles:follow_view', kwargs={'username': 'eric'}),
+            reverse('profiles:follow_view', kwargs={'username': 'kyle'}),
             data={},
             content_type='application/json',
             **headers
@@ -95,7 +95,7 @@ class ProfileFolloweesViewTests(TestCase):
     fixtures = ['profiles.json']
 
     def test_get_empty_follows(self):
-        token = User.objects.get(username='eric').token
+        token = User.objects.get(username='stan').token
         headers = {
             'HTTP_AUTHORIZATION': 'Token ' + token
         }
@@ -116,7 +116,7 @@ class ProfileFolloweesViewTests(TestCase):
             **headers
         )
         followees = response.data.get('followees', None)
-        self.assertEqual(set(followees), set(['stan', 'kyle', 'eric']))
+        self.assertEqual(set(followees), set(['stan', 'kyle']))
 
     def test_get_unauthenticated(self):
         response = self.client.get(
