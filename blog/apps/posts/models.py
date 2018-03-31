@@ -34,7 +34,7 @@ class Comment(TimeStampedModel):
     title = models.CharField(max_length=100, blank=False)
     body = models.TextField(max_length=500, blank=False)
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
-    author = models.ForeignKey(Profile, related_name='comemnts', on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, related_name='comments', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
