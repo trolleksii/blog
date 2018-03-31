@@ -1,6 +1,6 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
+
 from rest_framework import permissions, status, views
-from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from .models import Profile
@@ -15,11 +15,8 @@ class ProfileView(views.APIView):
     serializer_class = ProfileSerializer
 
     def get(self, request, username, *args, **kwargs):
-        try:
-            profile = Profile.objects.get(user__username=username)
-        except ObjectDoesNotExist:
-            raise NotFound('profile with this username does not exists')
-        serializer = self.serializer_class(profile, context={'request': request})
+        profile = get_object_or_404(Profile, username=username)
+        serializer = self.serializer_class(profile, context={'user': request.user})
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
 
 
@@ -30,26 +27,19 @@ class ProfileFollowView(views.APIView):
     """
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ProfileSerializer
-    model = Profile
 
     def post(self, request, username, *args, **kwargs):
         follower = request.user.profile
-        try:
-            followee = self.model.objects.get(user__username=username)
-        except ObjectDoesNotExist:
-            raise NotFound("profile '{}' does not exists".format(username))
+        followee = get_object_or_404(Profile, username=username)
         follower.follow(followee)
-        serializer = self.serializer_class(followee, context={'request': request})
+        serializer = self.serializer_class(followee, context={'user': request.user})
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
 
     def delete(self, request, username, *args, **kwargs):
         follower = request.user.profile
-        try:
-            followee = self.model.objects.get(user__username=username)
-        except ObjectDoesNotExist:
-            raise NotFound('profile {} does not exists'.format(username))
+        followee = get_object_or_404(Profile, username=username)
         follower.unfollow(followee)
-        serializer = self.serializer_class(followee, context={'request': request})
+        serializer = self.serializer_class(followee, context={'user': request.user})
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
 
 
