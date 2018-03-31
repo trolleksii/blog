@@ -1,7 +1,6 @@
 import json
 
 from django.shortcuts import reverse
-
 from django.test import TestCase
 
 from apps.authentication.models import User
@@ -9,7 +8,7 @@ from apps.authentication.models import User
 
 class RegistrationViewTests(TestCase):
 
-    def test_register_user(self):
+    def test_correct_data(self):
         data = json.dumps(
             {
                 "user": {
@@ -29,7 +28,7 @@ class RegistrationViewTests(TestCase):
         token = user.get('token', '')
         self.assertNotEqual(token, '')
 
-    def test_register_duplicate(self):
+    def test_duplicate_user(self):
         data = json.dumps(
             {
                 "user": {
@@ -123,7 +122,8 @@ class UserViewTests(TestCase):
     fixtures = ['authentication.json']
 
     def test_get_user_info(self):
-        token = User.objects.get(username='kenny').token
+        user = User.objects.first()
+        token = user.token
         headers = {
             'HTTP_AUTHORIZATION': 'Token ' + token
         }
@@ -131,11 +131,13 @@ class UserViewTests(TestCase):
             reverse('authentication:retrieve_view'), **headers)
         user_data = response.data.get('user', None)
         self.assertIsNotNone(user_data)
-        self.assertEqual(user_data['username'], 'kenny')
+        self.assertEqual(user_data['username'], user.username)
+        self.assertEqual(user_data['about'], user.profile.about)
+        self.assertEqual(user_data['pic'], user.profile.pic)
 
     def test_get_user_info_wrong_token(self):
         headers = {
-            'HTTP_AUTHORIZATION': 'Token qwerty123qwerty123'
+            'HTTP_AUTHORIZATION': 'Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NCwiZXhwIjoxNTIyNTY5MDQ2Ljg2NjYxfQ.EdbIIn7Xnz7c5YL-Eo-5VdcORnmhK3JQSUMZL6Sjn5W'
         }
         response = self.client.get(
             reverse('authentication:retrieve_view'), **headers)
@@ -147,7 +149,7 @@ class UserViewTests(TestCase):
     def test_update_user_info(self):
         new_email = 'kenneth@gmail.com'
         new_about = 'Every decent mock person requires decent name.'
-        token = User.objects.get(username='kenny').token
+        token = User.objects.first().token
         headers = {
             'HTTP_AUTHORIZATION': 'Token ' + token,
         }
@@ -167,6 +169,6 @@ class UserViewTests(TestCase):
         self.assertIsNotNone(user_data)
         self.assertEqual(user_data['email'], new_email)
         self.assertEqual(user_data['about'], new_about)
-        user = User.objects.get(username='kenny')
+        user = User.objects.first()
         self.assertEqual(user.email, new_email)
         self.assertEqual(user.profile.about, new_about)
