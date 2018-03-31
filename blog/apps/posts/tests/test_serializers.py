@@ -186,6 +186,30 @@ class PostSerializerTests(TestCase):
         )
         self.assertFalse(serializer.is_valid())
 
+    def test_update_post(self):
+        new_data = {
+            'title': 'modified title',
+            'body': 'modified body',
+            'tagList': ['upd1', 'upd2']
+        }
+        post = Post.objects.first()
+        serializer = PostSerializer(
+            post,
+            data=new_data,
+            context={'user': post.author.user},
+            partial=True
+        )
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        data = serializer.data
+        self.assertEqual(post.slug, data['slug'])
+        self.assertEqual(post.title, data['title'])
+        self.assertEqual(post.body, data['body'])
+        self.assertEqual(post.author.user.username, data['author']['username'])
+        self.assertEqual(post.get_likes(), data['likes'])
+        self.assertEqual(post.get_dislikes(), data['dislikes'])
+        self.assertEqual(post.tags.count(), len(data['tagList']))
+
 
 class TagSerializerTests(TestCase):
 
@@ -242,3 +266,11 @@ class TagSerializerTests(TestCase):
         serializer.save()
         tags = Tag.objects.filter(body__in=tag_bodys)
         self.assertEqual(len(tags), 3)
+
+    def test_deserialize_incorrect_data(self):
+        data = [1, 2, 3]
+        serializer = TagSerializer(
+            data=data,
+            many=True
+        )
+        self.assertFalse(serializer.is_valid())
