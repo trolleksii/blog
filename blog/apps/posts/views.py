@@ -35,7 +35,7 @@ class PostViewSet(ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({'user': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({'post': serializer.data}, status=status.HTTP_201_CREATED)
 
     def update(self, request, slug, *args, **kwargs):
         data = request.data.get('post', {})
