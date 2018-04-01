@@ -93,10 +93,13 @@ class PostSerializer(serializers.ModelSerializer):
     def validate(self, args):
         user = self.context.get('user', None)
         if user is None or not user.is_authenticated:
-            message = 'user not authenticated'
+            msg = 'user not authenticated'
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='invalid')
+                'validation error': msg})
+        if args == {}:
+            msg = 'no data were provided'
+            raise ValidationError({
+                'validation error': msg})
         args['author'] = user.profile
         # TODO generate unique slugs
         args['slug'] = slugify(args['title'])
