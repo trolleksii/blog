@@ -84,6 +84,14 @@ class CommentModelTests(TestCase):
         self.assertIsNotNone(comment)
         self.assertEqual(str(comment), comment.title)
 
+    def test_commens_deleted_with_post_delete(self):
+        post = Post.objects.first()
+        comments_pks = [value['pk'] for value in post.comments.values('pk')]
+        self.assertNotEqual(len(comments_pks), 0)
+        post.delete()
+        for pk in comments_pks:
+            self.assertFalse(Comment.objects.filter(pk=pk).exists())
+
 
 class TagModelTests(TestCase):
 
