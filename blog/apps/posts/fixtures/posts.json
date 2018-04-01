@@ -246,9 +246,7 @@
     ],
     "favorites": [],
     "liked_posts": [],
-    "disliked_posts": [
-      3
-    ]
+    "disliked_posts": []
   }
 },
 {
@@ -266,13 +264,8 @@
       1,
       2
     ],
-    "liked_posts": [
-      1,
-      2
-    ],
-    "disliked_posts": [
-      3
-    ]
+    "liked_posts": [],
+    "disliked_posts": []
   }
 },
 {
@@ -289,13 +282,8 @@
     "favorites": [
       1
     ],
-    "liked_posts": [
-      1,
-      2
-    ],
-    "disliked_posts": [
-      3
-    ]
+    "liked_posts": [],
+    "disliked_posts": []
   }
 },
 {
@@ -306,12 +294,11 @@
     "about": "",
     "pic": "",
     "followees": [],
-    "favorites": [],
+    "favorites": [
+      1
+    ],
     "liked_posts": [],
-    "disliked_posts": [
-      1,
-      2
-    ]
+    "disliked_posts": []
   }
 }
 ]
