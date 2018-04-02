@@ -2,8 +2,6 @@ from django.contrib.auth import authenticate
 
 from rest_framework import serializers
 
-from apps.profiles.models import Profile
-
 from .models import User
 
 
@@ -60,7 +58,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
-        Profile.objects.create(user=user)
         return user
 
 
