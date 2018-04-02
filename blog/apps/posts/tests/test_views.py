@@ -36,6 +36,21 @@ class PostViewSetTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), posts_count)
 
+    def test_list_posts_by_tag(self):
+        pass
+
+    def test_list_posts_by_person_who_liked(self):
+        pass
+
+    def test_list_posts_by_author(self):
+        pass
+
+    def test_list_pagination(self):
+        pass
+
+    def test_feed(self):
+        pass
+
     def test_retrieve_post(self):
         post = Post.objects.first()
         response = self.client.get(
