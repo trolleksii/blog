@@ -4,7 +4,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 
+from apps.core.text import unique_slugify
+
 from apps.posts.models import Comment, Post, Tag
+
 from apps.profiles.serializers import ProfileSerializer
 
 
@@ -101,8 +104,12 @@ class PostSerializer(serializers.ModelSerializer):
             raise ValidationError({
                 'validation error': msg})
         args['author'] = user.profile
-        # TODO generate unique slugs
-        args['slug'] = slugify(args['title'])
+        slug_check = False
+        while not slug_check:
+            slug = unique_slugify(args['title'])
+            if not Post.objects.filter(slug=slug).exists():
+                slug_check = True
+        args['slug'] = slug
         return args
 
     def create(self, validated_data):
