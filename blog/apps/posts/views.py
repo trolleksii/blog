@@ -124,7 +124,15 @@ class PostViewSet(ModelViewSet):
 
     @list_route(methods=['get'], permission_classes=[IsAuthenticated], url_name='feed')
     def feed(self, request):
-        pass
+        user = request.user
+        qset = Post.objects.filter(author__in=user.profile.followees.all())
+        page = self.paginate_queryset(qset)
+        serializer = self.serializer_class(
+            page,
+            context={'user': request.user},
+            many=True
+        )
+        return self.get_paginated_response(serializer.data)
 
 
 class CommentListCreateAPIView(ListCreateAPIView):
