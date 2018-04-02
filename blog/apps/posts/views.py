@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, DestroyAPIView
@@ -26,6 +26,23 @@ class PostViewSet(ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Post.objects.all()
     lookup_field = 'slug'
+
+    def get_queryset(self):
+        qset = super(PostViewSet, self).get_queryset()
+        limit = self.request.GET.get('limit', 20)
+        offset = self.request.GET.get('offset', 0)
+        tag = self.request.GET.get('tag', None)
+        author = self.request.GET.get('author', None)
+        favorited = self.request.GET.get('favorited', None)
+        if author:
+            qset = qset.filter(author__user__username=author)
+        if tag:
+            qset = qset.filter(tags__body=tag)
+        if favorited:
+            qset = qset.filter(favorited_by__user__username=favorited)
+        qset_length = qset.count()
+        qset = qset[int(offset):int(limit)]
+        return qset, qset_length
 
     def create(self, request, *args, **kwargs):
         data = request.data.get('post', {})
@@ -53,13 +70,19 @@ class PostViewSet(ModelViewSet):
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
-        qset = self.get_queryset()
+        qset, qset_length = self.get_queryset()
         serializer = self.serializer_class(
             qset,
             context={'user': request.user},
             many=True
         )
-        return Response({'posts': serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {
+                'posts': serializer.data,
+                'postsCount': qset_length
+            },
+            status=status.HTTP_200_OK
+        )
 
     def destroy(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug)
@@ -105,6 +128,10 @@ class PostViewSet(ModelViewSet):
             context={'user': request.user}
         )
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
+
+    @list_route(methods=['get'], permission_classes=[IsAuthenticated], url_name='feed')
+    def feed(self, request):
+        pass
 
 
 class CommentListCreateAPIView(ListCreateAPIView):
