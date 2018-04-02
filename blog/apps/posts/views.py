@@ -9,6 +9,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from .models import Comment, Post, Tag
 from .serializers import CommentSerializer, PostSerializer, TagSerializer
+from .pagination import PostsPaginaton
 
 
 class ListTagsAPIView(ListAPIView):
@@ -25,12 +26,11 @@ class PostViewSet(ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Post.objects.all()
+    pagination_class = PostsPaginaton
     lookup_field = 'slug'
 
     def get_queryset(self):
         qset = super(PostViewSet, self).get_queryset()
-        limit = self.request.GET.get('limit', 20)
-        offset = self.request.GET.get('offset', 0)
         tag = self.request.GET.get('tag', None)
         author = self.request.GET.get('author', None)
         favorited = self.request.GET.get('favorited', None)
@@ -40,9 +40,7 @@ class PostViewSet(ModelViewSet):
             qset = qset.filter(tags__body=tag)
         if favorited:
             qset = qset.filter(favorited_by__user__username=favorited)
-        qset_length = qset.count()
-        qset = qset[int(offset):int(limit)]
-        return qset, qset_length
+        return qset
 
     def create(self, request, *args, **kwargs):
         data = request.data.get('post', {})
@@ -70,19 +68,14 @@ class PostViewSet(ModelViewSet):
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
-        qset, qset_length = self.get_queryset()
+        qset = self.get_queryset()
+        page = self.paginate_queryset(qset)
         serializer = self.serializer_class(
-            qset,
+            page,
             context={'user': request.user},
             many=True
         )
-        return Response(
-            {
-                'posts': serializer.data,
-                'postsCount': qset_length
-            },
-            status=status.HTTP_200_OK
-        )
+        return self.get_paginated_response(serializer.data)
 
     def destroy(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug)
