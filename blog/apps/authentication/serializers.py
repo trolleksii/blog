@@ -81,6 +81,11 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
 
+    def validate(self, args):
+        if args == {}:
+            raise serializers.ValidationError('no data were passed')
+        return args
+
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
         # extract profile-related data
