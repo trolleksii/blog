@@ -130,6 +130,11 @@ class UserSerializerTests(TestCase):
         })
         self.assertTrue(serializer.is_valid())
 
+    def test_update_empty_data(self):
+        serializer = UserSerializer(
+            self.user, data={}, partial=True)
+        self.assertFalse(serializer.is_valid())
+
     def test_serializer_updates_profile(self):
         serializer = UserSerializer(self.user, data={
             'email': 'someuser@mail.com',
