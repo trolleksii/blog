@@ -83,7 +83,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, args):
         if args == {}:
-            raise serializers.ValidationError('no data were passed')
+            raise serializers.ValidationError('No data were passed')
         return args
 
     def update(self, instance, validated_data):

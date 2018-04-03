@@ -96,13 +96,13 @@ class PostSerializer(serializers.ModelSerializer):
     def validate(self, args):
         user = self.context.get('user', None)
         if user is None or not user.is_authenticated:
-            msg = 'user not authenticated'
+            msg = 'User is not authenticated.'
             raise ValidationError({
-                'validation error': msg})
+                'detail': msg})
         if args == {}:
-            msg = 'no data were provided'
+            msg = 'No data were provided.'
             raise ValidationError({
-                'validation error': msg})
+                'detail': msg})
         args['author'] = user.profile
         slug_check = False
         while not slug_check:
