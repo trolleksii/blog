@@ -9,7 +9,6 @@ from .views import (
 app_name = 'posts'
 
 router = SimpleRouter(trailing_slash=False)
-
 router.register(r'posts', PostViewSet, base_name='post')
 
 urlpatterns = [
