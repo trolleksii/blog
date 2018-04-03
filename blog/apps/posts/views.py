@@ -56,7 +56,8 @@ class PostViewSet(ModelViewSet):
         data = request.data.get('post', {})
         post = get_object_or_404(Post, slug=slug)
         if post.author != request.user.profile:
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'errors': {'update': "Operation not allowed"}},
+                            status=status.HTTP_403_FORBIDDEN)
         serializer = self.serializer_class(
             post,
             data=data,
@@ -80,9 +81,10 @@ class PostViewSet(ModelViewSet):
     def destroy(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug)
         if post.author != request.user.profile:
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'errors': {'delete': "Operation not allowed"}},
+                            status=status.HTTP_403_FORBIDDEN)
         post.delete()
-        return Response('', status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
     def retrieve(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug)
@@ -92,7 +94,7 @@ class PostViewSet(ModelViewSet):
         )
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
-    @detail_route(methods=['post', 'delete'], permission_classes=[IsAuthenticated], url_name='favorite')
+    @detail_route(methods=['POST', 'DELETE'], permission_classes=[IsAuthenticated], url_name='favorite')
     def favorite(self, request, slug):
         post = get_object_or_404(Post, slug=slug)
         if self.request.method == 'POST':
@@ -105,7 +107,7 @@ class PostViewSet(ModelViewSet):
         )
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
-    @detail_route(methods=['post', 'delete'], permission_classes=[IsAuthenticated], url_name='like')
+    @detail_route(methods=['POST', 'DELETE'], permission_classes=[IsAuthenticated], url_name='like')
     def like(self, request, slug):
         post = get_object_or_404(Post, slug=slug)
         if post.author.user != request.user:
@@ -122,7 +124,7 @@ class PostViewSet(ModelViewSet):
         )
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
-    @list_route(methods=['get'], permission_classes=[IsAuthenticated], url_name='feed')
+    @list_route(methods=['GET'], permission_classes=[IsAuthenticated], url_name='feed')
     def feed(self, request):
         user = request.user
         qset = Post.objects.filter(author__in=user.profile.followees.all())
@@ -167,6 +169,7 @@ class CommentDestroyAPIView(DestroyAPIView):
     def destroy(self, request, slug, pk, *args, **kwargs):
         comment = get_object_or_404(Comment, post__slug=slug, pk=pk)
         if comment.author != request.user.profile:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response({'errors': {'delete': "Operation not allowed"}},
+                            status=status.HTTP_403_FORBIDDEN)
         comment.delete()
         return Response(status=status.HTTP_200_OK)
