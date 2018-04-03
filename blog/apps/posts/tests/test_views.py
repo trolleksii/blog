@@ -1,4 +1,5 @@
 import json
+import random
 
 from django.shortcuts import reverse
 from django.test import TestCase
@@ -6,8 +7,9 @@ from django.test import TestCase
 from rest_framework import status
 
 from apps.authentication.models import User
-
+from apps.core.tests.factories import PostFactory, TagFactory, UserFactory
 from apps.posts.models import Comment, Post, Tag
+from apps.posts.pagination import PostsPaginaton
 
 
 class TagViewTests(TestCase):
@@ -24,7 +26,26 @@ class TagViewTests(TestCase):
 
 class PostViewSetTests(TestCase):
 
-    fixtures = ['posts.json']
+    users_num = 4
+    posts_num = 30
+
+    def setUp(self):
+        self.users = []
+        self.tags = []
+        for x in range(self.users_num):
+            user = UserFactory()
+            user.save()
+            if len(self.users) > 1:
+                user.profile.follow(random.choice(self.users).profile)
+            self.users.append(user)
+            tag = TagFactory()
+            tag.save()
+            self.tags.append(tag)
+        for i in range(self.posts_num):
+            post = PostFactory(author=random.choice(self.users).profile)
+            post.tags.add(random.choice(self.tags))
+            post.save()
+            random.choice(self.users).profile.favorite(post)
 
     def test_list_posts(self):
         posts_count = Post.objects.count()
@@ -32,24 +53,77 @@ class PostViewSetTests(TestCase):
             reverse('posts:post-list'),
             content_type='application/json'
         )
-        data = response.data['posts']
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(data), posts_count)
+        self.assertEqual(response.data['postsCount'], posts_count)
+        page_len = PostsPaginaton.default_limit
+        self.assertLessEqual(len(response.data['posts']), page_len)
 
     def test_list_posts_by_tag(self):
-        pass
+        tag = self.tags[0]
+        response = self.client.get(
+            reverse('posts:post-list') + '?tag={}'.format(tag),
+            content_type='application/json'
+        )
+        total_posts = Post.objects.filter(tags__body=tag).count()
+        self.assertEqual(response.data['postsCount'], total_posts)
+        for entry in response.data['posts']:
+            self.assertEqual([tag.body], entry['tagList'])
 
-    def test_list_posts_by_person_who_liked(self):
-        pass
+    def test_list_posts_favorited_by_person(self):
+        user = self.users[0]
+        headers = {
+            'HTTP_AUTHORIZATION': 'Token ' + user.token
+        }
+        response = self.client.get(
+            reverse('posts:post-list') + '?favorited={}'.format(user),
+            content_type='application/json',
+            **headers
+        )
+        total_posts = Post.objects.filter(favorited_by=user.profile).count()
+        self.assertEqual(response.data['postsCount'], total_posts)
+        for entry in response.data['posts']:
+            self.assertTrue(entry['favorited'])
 
     def test_list_posts_by_author(self):
-        pass
+        author = self.users[0].profile
+        response = self.client.get(
+            reverse('posts:post-list') + '?author={}'.format(author),
+            content_type='application/json'
+        )
+        total_posts = Post.objects.filter(author=author).count()
+        self.assertEqual(response.data['postsCount'], total_posts)
+        for entry in response.data['posts']:
+            self.assertEqual(author.user.username, entry['author']['username'])
 
     def test_list_pagination(self):
-        pass
+        posts_count = Post.objects.count()
+        limit = 10
+        offset = posts_count // 3
+        response = self.client.get(
+            reverse('posts:post-list') + '?limit={}&offset={}'.format(limit, offset),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['postsCount'], posts_count)
+        self.assertLessEqual(len(response.data['posts']), limit)
+        self.assertEqual(
+            response.data['posts'][0]['title'],
+            Post.objects.all()[offset].title
+        )
 
     def test_feed(self):
-        pass
+        user = self.users[0]
+        posts_count = Post.objects.filter(author__in=user.profile.followees.all()).count()
+        headers = {
+            'HTTP_AUTHORIZATION': 'Token ' + user.token
+        }
+        response = self.client.get(
+            reverse('posts:post-feed'),
+            content_type='application/json',
+            **headers
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['postsCount'], posts_count)
 
     def test_retrieve_post(self):
         post = Post.objects.first()
@@ -228,6 +302,8 @@ class PostViewSetTests(TestCase):
     def test_favorite_post(self):
         profile = User.objects.first().profile
         post = profile.posts.first()
+        # in case if setUp favourited this post with this profile
+        profile.unfavorite(post)
         self.assertIsNotNone(post)
         self.assertNotIn(post, profile.favorites.all())
         favorites_before = profile.favorites.count()
@@ -263,6 +339,7 @@ class PostViewSetTests(TestCase):
     def test_unfavorite_post(self):
         post = Post.objects.first()
         user = User.objects.last()
+        user.profile.favorite(post)
         self.assertIsNotNone(post)
         self.assertIn(post, user.profile.favorites.all())
         favorites_before = user.profile.favorites.count()
