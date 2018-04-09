@@ -44,7 +44,7 @@ class PostViewSet(ModelViewSet):
         return qset
 
     def create(self, request, *args, **kwargs):
-        data = request.data.get('post', {})
+        data = request.data.get('post', None)
         serializer = self.serializer_class(
             data=data,
             context={'user': request.user}
@@ -153,7 +153,7 @@ class CommentListCreateAPIView(ListCreateAPIView):
 
     def create(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug)
-        data = request.data.get('comment', {})
+        data = request.data.get('comment', None)
         serializer = self.serializer_class(
             data=data,
             context={'user': request.user, 'post': post}
