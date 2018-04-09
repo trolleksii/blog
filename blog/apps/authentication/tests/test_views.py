@@ -125,7 +125,7 @@ class UserViewTests(TestCase):
         user = User.objects.first()
         token = user.token
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token
+            'HTTP_AUTHORIZATION': 'Bearer ' + token
         }
         response = self.client.get(
             reverse('authentication:retrieve_view'), **headers)
@@ -151,7 +151,7 @@ class UserViewTests(TestCase):
         new_about = 'Every decent mock person requires decent name.'
         token = User.objects.first().token
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token,
+            'HTTP_AUTHORIZATION': 'Bearer ' + token,
         }
         data = json.dumps({
             'user': {

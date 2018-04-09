@@ -14,7 +14,7 @@ class ProfileViewTests(TestCase):
         # Kenny makes request to see Stan's profile
         token = User.objects.get(username='kenny').token
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token
+            'HTTP_AUTHORIZATION': 'Bearer ' + token
         }
         response = self.client.get(
             reverse('profiles:profile_view', kwargs={'username': 'stan'}),
@@ -40,7 +40,7 @@ class ProfileFollowViewTests(TestCase):
     def test_follow_self(self):
         token = User.objects.get(username='kyle').token
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token
+            'HTTP_AUTHORIZATION': 'Bearer ' + token
         }
         response = self.client.post(
             reverse('profiles:follow_view', kwargs={'username': 'kyle'}),
@@ -54,7 +54,7 @@ class ProfileFollowViewTests(TestCase):
     def test_follow_profile(self):
         token = User.objects.get(username='kenny').token
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token
+            'HTTP_AUTHORIZATION': 'Bearer ' + token
         }
         response = self.client.post(
             reverse('profiles:follow_view', kwargs={'username': 'kyle'}),
@@ -72,7 +72,7 @@ class ProfileFollowViewTests(TestCase):
             user__username=followee)) == 1
         self.assertTrue(user_has_followee)
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.delete(
             reverse('profiles:follow_view', kwargs={'username': followee}),
@@ -99,7 +99,7 @@ class ProfileFolloweesViewTests(TestCase):
     def test_get_empty_follows(self):
         token = User.objects.get(username='stan').token
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token
+            'HTTP_AUTHORIZATION': 'Bearer ' + token
         }
         response = self.client.get(
             reverse('profiles:followees_view'),
@@ -111,7 +111,7 @@ class ProfileFolloweesViewTests(TestCase):
     def test_get_follows(self):
         token = User.objects.get(username='kenny').token
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token
+            'HTTP_AUTHORIZATION': 'Bearer ' + token
         }
         response = self.client.get(
             reverse('profiles:followees_view'),

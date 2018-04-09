@@ -72,7 +72,7 @@ class PostViewSetTests(TestCase):
     def test_list_posts_favorited_by_person(self):
         user = self.users[0]
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.get(
             reverse('posts:post-list') + '?favorited={}'.format(user),
@@ -115,7 +115,7 @@ class PostViewSetTests(TestCase):
         user = self.users[0]
         posts_count = Post.objects.filter(author__in=user.profile.followees.all()).count()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.get(
             reverse('posts:post-feed'),
@@ -150,7 +150,7 @@ class PostViewSetTests(TestCase):
             'tagList': ['mock', 'fake']
         }
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.post(
             reverse('posts:post-list'),
@@ -190,7 +190,7 @@ class PostViewSetTests(TestCase):
             'tagList': ['mock', 'fake']
         }
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.put(
             reverse('posts:post-detail', kwargs={'slug': post.slug}),
@@ -205,7 +205,7 @@ class PostViewSetTests(TestCase):
         post = user.profile.posts.first()
         self.assertIsNotNone(post)
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.put(
             reverse('posts:post-detail', kwargs={'slug': post.slug}),
@@ -226,7 +226,7 @@ class PostViewSetTests(TestCase):
             'tagList': ['mock', 'fake']
         }
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + modifier.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + modifier.token
         }
         response = self.client.put(
             reverse('posts:post-detail', kwargs={'slug': post.slug}),
@@ -257,7 +257,7 @@ class PostViewSetTests(TestCase):
         post = user.profile.posts.first()
         self.assertIsNotNone(post)
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.delete(
             reverse('posts:post-detail', kwargs={'slug': post.slug}),
@@ -279,7 +279,7 @@ class PostViewSetTests(TestCase):
             'tagList': ['mock', 'fake']
         }
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + modifier.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + modifier.token
         }
         response = self.client.delete(
             reverse('posts:post-detail', kwargs={'slug': post.slug}),
@@ -308,7 +308,7 @@ class PostViewSetTests(TestCase):
         self.assertNotIn(post, profile.favorites.all())
         favorites_before = profile.favorites.count()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + profile.user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + profile.user.token
         }
         response = self.client.post(
             reverse('posts:post-favorite', kwargs={'slug': post.slug}),
@@ -321,7 +321,7 @@ class PostViewSetTests(TestCase):
     def test_favorite_wrong_slug(self):
         user = User.objects.first()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.post(
             reverse('posts:post-favorite', kwargs={'slug': 'wrong slug'}),
@@ -344,7 +344,7 @@ class PostViewSetTests(TestCase):
         self.assertIn(post, user.profile.favorites.all())
         favorites_before = user.profile.favorites.count()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.delete(
             reverse('posts:post-favorite', kwargs={'slug': post.slug}),
@@ -357,7 +357,7 @@ class PostViewSetTests(TestCase):
     def test_unfavorite_wrong_slug(self):
         user = User.objects.first()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.delete(
             reverse('posts:post-favorite', kwargs={'slug': 'wrong slug'}),
@@ -379,7 +379,7 @@ class PostViewSetTests(TestCase):
         self.assertNotIn(post, voter.profile.liked_posts.all())
         likes_before = post.get_likes()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + voter.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + voter.token
         }
         response = self.client.post(
             reverse('posts:post-like', kwargs={'slug': post.slug}),
@@ -399,7 +399,7 @@ class PostViewSetTests(TestCase):
     def test_like_wrong_slug(self):
         user = User.objects.first()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.post(
             reverse('posts:post-like', kwargs={'slug': 'wrong slug'}),
@@ -414,7 +414,7 @@ class PostViewSetTests(TestCase):
         self.assertNotIn(post, voter.profile.disliked_posts.all())
         dislikes_before = post.get_dislikes()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + voter.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + voter.token
         }
         response = self.client.delete(
             reverse('posts:post-like', kwargs={'slug': post.slug}),
@@ -434,7 +434,7 @@ class PostViewSetTests(TestCase):
     def test_dislike_wrong_slug(self):
         user = User.objects.first()
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.delete(
             reverse('posts:post-like', kwargs={'slug': 'wrong slug'}),
@@ -455,7 +455,7 @@ class CommentCreateListViewTests(TestCase):
             'body': 'body of the comment created from tests'
         }
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.post(
             reverse('posts:comments_view', kwargs={'slug': post.slug}),
@@ -479,7 +479,7 @@ class CommentCreateListViewTests(TestCase):
             'body': 'body of the comment created from tests'
         }
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + user.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
         }
         response = self.client.post(
             reverse('posts:comments_view', kwargs={'slug': 'mock slug'}),
@@ -530,7 +530,7 @@ class CommentDestroyViewTests(TestCase):
         slug = comment.post.slug
         pk = comment.pk
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + post_author.token
+            'HTTP_AUTHORIZATION': 'Bearer ' + post_author.token
         }
         response = self.client.delete(
             reverse(
@@ -571,7 +571,7 @@ class CommentDestroyViewTests(TestCase):
         slug = comment.post.slug
         pk = comment.pk
         headers = {
-            'HTTP_AUTHORIZATION': 'Token ' + token
+            'HTTP_AUTHORIZATION': 'Bearer ' + token
         }
         response = self.client.delete(
             reverse(
