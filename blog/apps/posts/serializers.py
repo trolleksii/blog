@@ -112,13 +112,20 @@ class PostSerializer(serializers.ModelSerializer):
         return post
 
     def update(self, instance, validated_data):
-        tag_data_list = validated_data.pop('tags', [])
+        new_tags = validated_data.pop('tags', [])
         for key, value in validated_data.items():
             setattr(instance, key, value)
-        instance.tags.all().delete()
-        for tag_data in tag_data_list:
-            tag = Tag.objects.get_or_create(**tag_data)[0]
-            instance.tags.add(tag)
+        if new_tags:
+            old_tags = {tag['body'] for tag in instance.tags.values('body')}
+            new_tags = {tag['body'] for tag in new_tags}
+            # adding new tags
+            for tag_body in new_tags.difference(old_tags):
+                tag = Tag.objects.get_or_create(body=tag_body, slug=slugify(tag_body))[0]
+                instance.tags.add(tag)
+            # and removing unused
+            for tag_body in old_tags.difference(new_tags):
+                tag = Tag.objects.get(body=tag_body)
+                instance.tags.remove(tag)
         return instance
 
     def get_likes(self, post):
