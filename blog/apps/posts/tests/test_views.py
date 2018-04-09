@@ -178,7 +178,7 @@ class PostViewSetTests(TestCase):
             data=json.dumps({'post': data}),
             content_type='application/json',
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_update_own_post(self):
         user = User.objects.first()
@@ -250,7 +250,7 @@ class PostViewSetTests(TestCase):
             data=json.dumps({'post': data}),
             content_type='application/json',
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete_own_post(self):
         user = User.objects.first()
@@ -297,7 +297,7 @@ class PostViewSetTests(TestCase):
             reverse('posts:post-detail', kwargs={'slug': post.slug}),
             content_type='application/json',
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_favorite_post(self):
         profile = User.objects.first().profile
@@ -334,7 +334,7 @@ class PostViewSetTests(TestCase):
         response = self.client.post(
             reverse('posts:post-favorite', kwargs={'slug': post.slug}),
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_unfavorite_post(self):
         post = Post.objects.first()
@@ -370,7 +370,7 @@ class PostViewSetTests(TestCase):
         response = self.client.delete(
             reverse('posts:post-favorite', kwargs={'slug': post.slug}),
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_like_post(self):
         post = User.objects.first().profile.posts.first()
@@ -394,7 +394,7 @@ class PostViewSetTests(TestCase):
         response = self.client.post(
             reverse('posts:post-like', kwargs={'slug': post.slug}),
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_like_wrong_slug(self):
         user = User.objects.first()
@@ -429,7 +429,7 @@ class PostViewSetTests(TestCase):
         response = self.client.delete(
             reverse('posts:post-like', kwargs={'slug': post.slug}),
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_dislike_wrong_slug(self):
         user = User.objects.first()
@@ -500,7 +500,7 @@ class CommentCreateListViewTests(TestCase):
             data=json.dumps({'comment': comment}),
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_comments(self):
         post = Post.objects.first()
@@ -561,7 +561,7 @@ class CommentDestroyViewTests(TestCase):
                 }
             ),
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIsNotNone(response.data.get('errors', None))
 
     def test_delete_someones_comment(self):

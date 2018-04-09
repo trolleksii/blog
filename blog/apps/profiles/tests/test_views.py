@@ -1,6 +1,8 @@
 from django.shortcuts import reverse
 from django.test import TestCase
 
+from rest_framework import status
+
 from apps.authentication.models import User
 
 
@@ -87,7 +89,7 @@ class ProfileFollowViewTests(TestCase):
             data={},
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class ProfileFolloweesViewTests(TestCase):
@@ -122,4 +124,4 @@ class ProfileFolloweesViewTests(TestCase):
         response = self.client.get(
             reverse('profiles:followees_view'),
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
