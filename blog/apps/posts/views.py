@@ -70,7 +70,7 @@ class PostViewSet(ModelViewSet):
         return Response({'post': serializer.data}, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
-        qset = self.get_queryset()
+        qset = self.get_queryset().order_by('-created_at', '-modified_at')
         page = self.paginate_queryset(qset)
         serializer = self.serializer_class(
             page,
@@ -129,6 +129,7 @@ class PostViewSet(ModelViewSet):
     def feed(self, request):
         user = request.user
         qset = Post.objects.filter(author__in=user.profile.followees.all())
+        qset = qset.order_by('-created_at', '-modified_at')
         page = self.paginate_queryset(qset)
         serializer = self.serializer_class(
             page,
