@@ -24,7 +24,7 @@ class CommentSerializer(serializers.ModelSerializer):
         user = self.context.get('user', None)
         if user is None or not user.is_authenticated:
             msg = _('Comment author not set.')
-            raise exceptions.ValidationError(msg)
+            raise exceptions.NotAuthenticated(msg)
         post = self.context.get('post', None)
         if post is None:
             msg = _('Post to be commented not set.')
