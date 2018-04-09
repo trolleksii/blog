@@ -7,5 +7,6 @@ from apps.profiles.models import Profile
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, **kwargs):
-    if not Profile.objects.filter(user=instance).exists():
+    user_created = kwargs.get('created', False)
+    if user_created:
         Profile.objects.create(user=instance)
