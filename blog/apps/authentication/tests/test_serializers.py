@@ -60,12 +60,10 @@ class RegisterSerializerTests(TestCase):
 class LoginSerializerTests(TestCase):
 
     def setUp(self):
-        reg_serializer = RegistrationSerializer(data={
-            'username': 'kenny',
-            'password': 'qwerty123'
-        })
-        self.assertTrue(reg_serializer.is_valid())
-        self.user = reg_serializer.save()
+        self.user = User.objects.create_user(
+            username='SomeUser',
+            password='SomePassword'
+        )
 
     def test_returns_user_data(self):
         serializer = LoginSerializer(
@@ -106,12 +104,10 @@ class LoginSerializerTests(TestCase):
 class UserSerializerTests(TestCase):
 
     def setUp(self):
-        reg_serializer = RegistrationSerializer(data={
-            'username': 'SomeUser',
-            'password': 'SomePassword'
-        })
-        self.assertTrue(reg_serializer.is_valid())
-        self.user = reg_serializer.save()
+        self.user = User.objects.create_user(
+            username='SomeUser',
+            password='SomePassword'
+        )
 
     def test_partial_update(self):
         serializer = UserSerializer(
