@@ -27,7 +27,7 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(username=username, password=password)
         if user is None:
             msg = _('Incorrect credentials')
-            raise exceptions.AuthenticationFailed(msg)
+            raise exceptions.ValidationError(msg)
         return {
             'username': user.username,
             'email': user.email,
@@ -82,19 +82,24 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
 
+    def validate(self, attrs):
+        if not attrs:
+            msg = _('No data provided.')
+            raise exceptions.ValidationError(msg)
+        return attrs
+
     def update(self, instance, validated_data):
-        if validated_data:
-            password = validated_data.pop('password', None)
-            # extract profile-related data
-            profile = validated_data.pop('profile', None)
-            for key, value in validated_data.items():
-                setattr(instance, key, value)
-            if password:
-                instance.set_password(password)
-            # reflect changes in user profile
-            if profile:
-                for key, value in profile.items():
-                    setattr(instance.profile, key, value)
-                instance.profile.save()
-            instance.save()
+        password = validated_data.pop('password', None)
+        # extract profile-related data
+        profile = validated_data.pop('profile', None)
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        if password:
+            instance.set_password(password)
+        # reflect changes in user profile
+        if profile:
+            for key, value in profile.items():
+                setattr(instance.profile, key, value)
+            instance.profile.save()
+        instance.save()
         return instance
