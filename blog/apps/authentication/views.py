@@ -7,30 +7,30 @@ from rest_framework.views import APIView
 from .serializers import LoginSerializer, RegistrationSerializer, UserSerializer
 
 
-class RegisterView(APIView):
+class RegisterAPIView(APIView):
     permission_classes = (AllowAny,)
     serializer_class = RegistrationSerializer
 
     def post(self, request):
-        user = request.data.get('user', {})
+        user = request.data.get('user', None)
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
 
 
-class LoginView(APIView):
+class LoginAPIView(APIView):
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        credentials = request.data.get('user', {})
+        credentials = request.data.get('user', None)
         serializer = self.serializer_class(data=credentials)
         serializer.is_valid(raise_exception=True)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
 
 
-class UserView(RetrieveUpdateAPIView):
+class UserAPIView(RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
