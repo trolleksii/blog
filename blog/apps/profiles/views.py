@@ -7,7 +7,7 @@ from .models import Profile
 from .serializers import ProfileFolloweesSerializer, ProfileSerializer
 
 
-class ProfileView(views.APIView):
+class ProfileAPIView(views.APIView):
     """
     Returns profile information by username parameter.
     """
@@ -20,10 +20,10 @@ class ProfileView(views.APIView):
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
 
 
-class ProfileFollowView(views.APIView):
+class ProfileFollowAPIView(views.APIView):
     """
     Handles profile fllows/unfollows. Request maker is the follower, followee
-    is obtained by username parameter.
+    is identified by username parameter.
     """
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ProfileSerializer
@@ -43,7 +43,7 @@ class ProfileFollowView(views.APIView):
         return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
 
 
-class ProfileFolloweesView(views.APIView):
+class ProfileFolloweesAPIView(views.APIView):
     """
     Shows list of all followees of currently authenticated user.
     """
