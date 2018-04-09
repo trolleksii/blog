@@ -1,8 +1,7 @@
 from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-from rest_framework.settings import api_settings
+from rest_framework import exceptions, serializers
 
 from apps.core.text import unique_slugify
 
@@ -24,16 +23,12 @@ class CommentSerializer(serializers.ModelSerializer):
     def validate(self, args):
         user = self.context.get('user', None)
         if user is None or not user.is_authenticated:
-            message = 'user not authenticated'
-            raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='invalid')
+            msg = _('Comment author not set.')
+            raise exceptions.NotAuthenticated(msg)
         post = self.context.get('post', None)
         if post is None:
-            message = 'post not specified'
-            raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='invalid')
+            msg = _('Post to be commented not set.')
+            raise exceptions.ValidationError(msg)
         args['author'] = user.profile
         args['post'] = post
         return args
@@ -56,10 +51,8 @@ class TagSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         if not isinstance(data, str):
-            message = 'expected a string, but got a {}'.format(type(data))
-            raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='invalid')
+            msg = _('Expected a string, but got a {}.'.format(type(data)))
+            raise exceptions.ValidationError(msg)
         return {
             'body': data,
             'slug': slugify(data)
@@ -94,15 +87,13 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ['slug']
 
     def validate(self, args):
+        if args == {}:
+            msg = _('No data were provided.')
+            raise exceptions.ValidationError(msg)
         user = self.context.get('user', None)
         if user is None or not user.is_authenticated:
-            msg = 'User is not authenticated.'
-            raise ValidationError({
-                'detail': msg})
-        if args == {}:
-            msg = 'No data were provided.'
-            raise ValidationError({
-                'detail': msg})
+            msg = _('User is not authenticated.')
+            raise exceptions.ValidationError(msg)
         args['author'] = user.profile
         slug_check = False
         while not slug_check:

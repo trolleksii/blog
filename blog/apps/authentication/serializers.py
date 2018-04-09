@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
+from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import serializers
-
+from rest_framework import exceptions, serializers
 from .models import User
 
 
@@ -26,7 +26,8 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get('password', '')
         user = authenticate(username=username, password=password)
         if user is None:
-            raise serializers.ValidationError('Incorrect credentials')
+            msg = _('Incorrect credentials')
+            raise exceptions.AuthenticationFailed(msg)
         return {
             'username': user.username,
             'email': user.email,
@@ -81,22 +82,19 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
 
-    def validate(self, args):
-        if args == {}:
-            raise serializers.ValidationError('No data were passed')
-        return args
-
     def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
-        # extract profile-related data
-        profile = validated_data.pop('profile', {})
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        if password:
-            instance.set_password(password)
-        # reflect changes in user profile
-        for key, value in profile.items():
-            setattr(instance.profile, key, value)
-        instance.profile.save()
-        instance.save()
+        if validated_data:
+            password = validated_data.pop('password', None)
+            # extract profile-related data
+            profile = validated_data.pop('profile', None)
+            for key, value in validated_data.items():
+                setattr(instance, key, value)
+            if password:
+                instance.set_password(password)
+            # reflect changes in user profile
+            if profile:
+                for key, value in profile.items():
+                    setattr(instance.profile, key, value)
+                instance.profile.save()
+            instance.save()
         return instance
