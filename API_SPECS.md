@@ -148,3 +148,23 @@ All data are returned in JSON format with content type header `Content-Type: app
 }
 ```
 
+Endpoints:
+POST /api/posts
+POST /api/posts/login
+GET /api/user
+
+GET /api/profile/followees
+GET /api/profiles/:username
+POST, DELETE /api/profiles/:username/follow
+
+GET /api/tags
+
+GET, POST /api/posts ?author=user1&tag=sometag&
+GET, PUT, DELETE /api/posts/:slug
+GET /api/posts/feed ?limit=10&offset=10
+POST, DELETE /api/posts/:slug/like
+POST, DELETE /api/posts/:slug/favorite
+
+GET, POST /api/posts/:slug/comments
+DELETE /api/posts/:slug/comments/:pk
+
