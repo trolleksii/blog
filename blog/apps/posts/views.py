@@ -15,11 +15,12 @@ from .pagination import PostsPaginaton
 class ListTagsAPIView(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = TagSerializer
+    queryset = Tag.objects.all()
 
     def list(self, request):
-        queryset = Tag.objects.all()
-        serializer = self.serializer_class(queryset, many=True)
-        return Response({'tagList': serializer.data}, status=status.HTTP_200_OK)
+        response = super(ListTagsAPIView, self).list(self, request)
+        response.data = {'tagList': response.data}
+        return response
 
 
 class PostViewSet(ModelViewSet):
