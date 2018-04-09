@@ -3,22 +3,17 @@ from rest_framework.views import exception_handler
 
 
 def core_exception_handler(exc, context):
+    exception_class = exc.__class__.__name__
+    if exception_class in ['AuthenticationFailed', 'NotAuthenticated']:
+        setattr(exc, 'auth_header', 'Bearer relm="blog"')
+        setattr(exc, 'status_code', status.HTTP_401_UNAUTHORIZED)
     response = exception_handler(exc, context)
-
     handlers = {
-        'AuthenticationFailed': _handle_auth_error,
         'Http404': _handle_not_found_error,
-        'NotAuthenticated': _handle_auth_error,
         'ValidationError': _handle_validation_error
     }
-    exception_class = exc.__class__.__name__
     if exception_class in handlers:
         return handlers[exception_class](exc, context, response)
-    return _handle_generic_error(exc, context, response)
-
-
-def _handle_auth_error(exc, context, response):
-    response.status_code = status.HTTP_401_UNAUTHORIZED
     return _handle_generic_error(exc, context, response)
 
 

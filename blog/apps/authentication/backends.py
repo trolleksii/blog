@@ -22,7 +22,7 @@ class JWTAuthentication(BaseAuthentication):
     """
 
     keyword = 'Bearer'
-    exc_name = 'jwt_error'
+    exc_name = 'token_error'
     ALGORITHMS = ['HS256', ]
 
     def authenticate(self, request):
@@ -34,21 +34,15 @@ class JWTAuthentication(BaseAuthentication):
             return None
         if len(auth) == 1:
             msg = _('Invalid token header. No credentials provided.')
-            exc = exceptions.AuthenticationFailed(msg, self.exc_name)
-            setattr(exc, 'auth_header', 'Bearer relm="blog"')
-            raise exc
+            raise exceptions.AuthenticationFailed(msg, self.exc_name)
         elif len(auth) > 2:
             msg = _('Invalid token header. Token string should not contain spaces.')
-            exc = exceptions.AuthenticationFailed(msg, self.exc_name)
-            setattr(exc, 'auth_header', 'Bearer relm="blog"')
-            raise exc
+            raise exceptions.AuthenticationFailed(msg, self.exc_name)
         token = auth[1]
         try:
             payload = jwt.decode(token, secret, algorithms=self.ALGORITHMS)
         except Exception as e:
-            exc = exceptions.AuthenticationFailed(e, self.exc_name)
-            setattr(exc, 'auth_header', 'Bearer relm="blog"')
-            raise exc
+            raise exceptions.AuthenticationFailed(e, self.exc_name)
         return self.authenticate_credentials(payload['id'])
 
     def authenticate_credentials(self, pk):
@@ -59,13 +53,9 @@ class JWTAuthentication(BaseAuthentication):
             user = User.objects.get(pk=pk)
         except ObjectDoesNotExist:
             msg = _('No user matching this token was found.')
-            exc = exceptions.AuthenticationFailed(msg, self.exc_name)
-            setattr(exc, 'auth_header', 'Bearer relm="blog"')
-            raise exc
+            raise exceptions.AuthenticationFailed(msg, self.exc_name)
 
         if not user.is_active:
             msg = _('This user has been deactivated.')
-            exc = exceptions.AuthenticationFailed(msg, self.exc_name)
-            setattr(exc, 'auth_header', 'Bearer relm="blog"')
-            raise exc
-            return (user, user.token)
+            raise exceptions.AuthenticationFailed(msg, self.exc_name)
+        return (user, user.token)
