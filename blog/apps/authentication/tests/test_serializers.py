@@ -61,8 +61,8 @@ class LoginSerializerTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username='SomeUser',
-            password='SomePassword'
+            username='kenny',
+            password='qwerty123'
         )
 
     def test_returns_user_data(self):
