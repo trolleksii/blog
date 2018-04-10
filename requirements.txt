@@ -1,5 +1,0 @@
-Django==2.0.3
-djangorestframework==3.7.7
-PyJWT==1.6.0
-pytz==2018.3
-factory-boy==2.10.0
