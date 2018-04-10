@@ -108,7 +108,7 @@ class PostViewSetTests(TestCase):
         self.assertLessEqual(len(response.data['posts']), limit)
         self.assertEqual(
             response.data['posts'][0]['title'],
-            Post.objects.all()[offset].title
+            Post.objects.all().order_by('-created_at', '-modified_at')[offset].title
         )
 
     def test_feed(self):
