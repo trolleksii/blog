@@ -1,14 +1,16 @@
-FROM django
+FROM django as django-with-pkgs
 
 RUN pip install --upgrade pip
 
-RUN pip install gunicorn
+COPY requirements* /src/
+
+RUN pip install -r /src/requirements_docker.txt
+
+
+
+FROM django-with-pkgs
 
 COPY ./blog /src/blog
-
-COPY requirements.txt /src
-
-RUN pip install -r /src/requirements.txt
 
 WORKDIR /src/blog
 
