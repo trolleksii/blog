@@ -31,10 +31,10 @@ virtualenv -p $(which python3) ./venv
 source ./venv/bin/activate
 ```
 
-6. Install required packages from requirements.txt:
+6. Install required packages from requirements_testing.txt:
 
 ```SH
-pip install -r ./blog/requirements.txt
+pip install -r ./blog/requirements_testing.txt
 ```
 
 7. `cd` into ./blog/blog:
@@ -52,6 +52,26 @@ python manage.py migrate
 9. Run tests to make sure that everything is working as it should:
 
 `python manage.py test`
+
+10. Now you can start it locally:
+
+```SH
+python manage.py runserver
+```
+
+or run it with docker:
+
+```SH
+cd ../
+docker build -t blogapi .
+docker run --name blog -e DEBUG="off" -e ALLOWED_HOSTS="localhost" -d -p 8000:8000 blogapi
+```
+
+Then check if container has started successfully:
+```SH
+docker container ls | grep blogapi
+```
+
 
 ## How to use it
 
