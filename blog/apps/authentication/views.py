@@ -7,27 +7,27 @@ from rest_framework.views import APIView
 from .serializers import LoginSerializer, RegistrationSerializer, UserSerializer
 
 
-class RegisterAPIView(APIView):
-    permission_classes = (AllowAny,)
-    serializer_class = RegistrationSerializer
-
-    def post(self, request):
-        user = request.data.get('user', None)
-        serializer = self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
-
-
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        credentials = request.data.get('user', None)
-        serializer = self.serializer_class(data=credentials)
+        data = request.data.get('user', None)
+        serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+
+
+class RegisterAPIView(APIView):
+    serializer_class = RegistrationSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        data = request.data.get('user', None)
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
 
 
 class UserAPIView(RetrieveUpdateAPIView):
