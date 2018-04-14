@@ -90,13 +90,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
-        # extract profile-related data
         profile = validated_data.pop('profile', None)
         for key, value in validated_data.items():
             setattr(instance, key, value)
         if password:
             instance.set_password(password)
-        # reflect changes in user profile
         if profile:
             for key, value in profile.items():
                 setattr(instance.profile, key, value)
