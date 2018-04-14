@@ -16,7 +16,7 @@ class JWTAuthentication(BaseAuthentication):
     Simple JWT based authentication.
 
     Clients should authenticate by passing the JWT token key in the
-    "Authorization" HTTP header, prepended with the string "Token ".
+    "Authorization" HTTP header, prepended with the "Bearer " keyword.
     For example:
         Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9....
     """
@@ -29,16 +29,10 @@ class JWTAuthentication(BaseAuthentication):
         """
         Authenticate the request and return a two-tuple of (user, token).
         """
-        auth = get_authorization_header(request).split()
-        if not auth or auth[0].lower().decode() != self.keyword.lower():
-            return None
-        if len(auth) == 1:
-            msg = _('Invalid token header. No credentials provided.')
-            raise exceptions.AuthenticationFailed(msg, self.exc_name)
-        elif len(auth) > 2:
-            msg = _('Invalid token header. Token string should not contain spaces.')
-            raise exceptions.AuthenticationFailed(msg, self.exc_name)
-        token = auth[1]
+        auth_header = get_authorization_header(request).split()
+        token = self._extract_token(auth_header)
+        if not token:
+            return None 
         try:
             payload = jwt.decode(token, secret, algorithms=self.ALGORITHMS)
         except Exception as e:
@@ -59,3 +53,14 @@ class JWTAuthentication(BaseAuthentication):
             msg = _('This user has been deactivated.')
             raise exceptions.AuthenticationFailed(msg, self.exc_name)
         return (user, user.token)
+
+    def _extract_token(self, auth_header):
+        if not auth_header or auth_header[0].lower().decode() != self.keyword.lower():
+            return None
+        if len(auth_header) == 1:
+            msg = _('Invalid token header. No credentials provided.')
+            raise exceptions.AuthenticationFailed(msg, self.exc_name)
+        elif len(auth_header) > 2:
+            msg = _('Invalid token header. Token string should not contain spaces.')
+            raise exceptions.AuthenticationFailed(msg, self.exc_name)
+        return auth_header[1]
