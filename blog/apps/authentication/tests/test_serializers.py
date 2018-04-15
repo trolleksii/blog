@@ -15,10 +15,9 @@ class RegisterSerializerTests(TestCase):
         }
         serializer = RegistrationSerializer(data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.errors, {})
         serializer.save()
-        users = User.objects.filter(username='User')
-        self.assertNotEqual(len(users), 0)
+        user_exists = User.objects.filter(username='User').exists()
+        self.assertTrue(user_exists)
 
     def test_with_correct_data(self):
         data = {
@@ -28,10 +27,9 @@ class RegisterSerializerTests(TestCase):
         }
         serializer = RegistrationSerializer(data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.errors, {})
-        reg_user = serializer.save()
+        registered_user = serializer.save()
         query_user = User.objects.get(username='User')
-        self.assertEqual(reg_user, query_user)
+        self.assertEqual(registered_user, query_user)
 
     def test_short_password(self):
         data = {
@@ -52,7 +50,6 @@ class RegisterSerializerTests(TestCase):
         }
         serializer = RegistrationSerializer(data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.errors, {})
         user = serializer.save()
         self.assertIsNotNone(user.profile)
 
@@ -60,33 +57,33 @@ class RegisterSerializerTests(TestCase):
 class LoginSerializerTests(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username='kenny',
-            password='qwerty123'
-        )
+        self.user_credentials = {
+            'username': 'kenny',
+            'password': 'qwerty123'
+        }
+        self.user = User.objects.create_user(**self.user_credentials)
 
     def test_returns_user_data(self):
-        serializer = LoginSerializer(
-            data={'username': 'kenny', 'password': 'qwerty123'})
+        serializer = LoginSerializer(data=self.user_credentials)
         self.assertTrue(serializer.is_valid())
 
     def test_without_username(self):
-        serializer = LoginSerializer(
-            data={'password': 'qwerty123'})
+        self.user_credentials.pop('username')
+        serializer = LoginSerializer(data=self.user_credentials)
         self.assertFalse(serializer.is_valid())
         username_error = serializer.errors.get('username', None)
         self.assertIsNotNone(username_error)
 
     def test_without_password(self):
-        serializer = LoginSerializer(
-            data={'username': 'kenny'})
+        self.user_credentials.pop('password')
+        serializer = LoginSerializer(data=self.user_credentials)
         self.assertFalse(serializer.is_valid())
         password_error = serializer.errors.get('password', None)
         self.assertIsNotNone(password_error)
 
     def test_with_wrong_password(self):
-        serializer = LoginSerializer(
-            data={'username': 'kenny', 'password': 'qwertyqwe'})
+        self.user_credentials['password'] = 'wrongpassword'
+        serializer = LoginSerializer(data=self.user_credentials)
         self.assertFalse(serializer.is_valid())
         error = serializer.errors.get('error', None)
         self.assertIsNotNone(error)
@@ -94,8 +91,7 @@ class LoginSerializerTests(TestCase):
     def test_inactive_user(self):
         self.user.is_active = False
         self.user.save()
-        serializer = LoginSerializer(
-            data={'username': 'kenny', 'password': 'qwerty123'})
+        serializer = LoginSerializer(data=self.user_credentials)
         self.assertFalse(serializer.is_valid())
         error = serializer.errors.get('error', None)
         self.assertIsNotNone(error)
@@ -111,33 +107,45 @@ class UserSerializerTests(TestCase):
 
     def test_partial_update(self):
         serializer = UserSerializer(
-            self.user, data={'email': 'someuser@mail.com'}, partial=True)
+            self.user,
+            data={'email': 'someuser@mail.com'},
+            partial=True
+        )
         self.assertTrue(serializer.is_valid())
         serializer.save()
         self.assertEqual(self.user.email, 'someuser@mail.com')
 
-    def test_full_update(self):
+    def test_full_update_partial_data(self):
         serializer = UserSerializer(
-            self.user, data={'email': 'someuser@mail.com'})
+            self.user,
+            data={'email': 'someuser@mail.com'}
+        )
         self.assertFalse(serializer.is_valid())
-        serializer = UserSerializer(self.user, data={
-            'email': 'someuser@mail.com',
-            'password': 'NewPassword'
-        })
+
+    def test_full_update_all_data(self):
+        serializer = UserSerializer(
+            self.user,
+            data={
+                'email': 'someuser@mail.com',
+                'password': 'NewPassword'
+            }
+        )
         self.assertTrue(serializer.is_valid())
 
     def test_update_empty_data(self):
-        serializer = UserSerializer(
-            self.user, data={}, partial=True)
+        serializer = UserSerializer(self.user, data={}, partial=True)
         self.assertFalse(serializer.is_valid())
 
     def test_serializer_updates_profile(self):
-        serializer = UserSerializer(self.user, data={
-            'email': 'someuser@mail.com',
-            'about': 'my about',
-            'pic': 'https://my.pic.com/my.png',
-            'password': 'NewPassword'
-        })
+        serializer = UserSerializer(
+            self.user,
+            data={
+                'email': 'someuser@mail.com',
+                'about': 'my about',
+                'pic': 'https://my.pic.com/my.png',
+                'password': 'NewPassword'
+            }
+        )
         self.assertTrue(serializer.is_valid())
         serializer.save()
         self.assertEqual(self.user.profile.pic, 'https://my.pic.com/my.png')
@@ -146,7 +154,7 @@ class UserSerializerTests(TestCase):
     def test_display_user(self):
         serializer = UserSerializer(self.user)
         expected_data = {
-            'username': 'SomeUser',
+            'username': self.user.username,
             'email': '',
             'pic': '',
             'about': ''
