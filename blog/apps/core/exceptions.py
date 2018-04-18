@@ -1,7 +1,7 @@
+from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.views import exception_handler
 
 from apps.authentication.backends import JWTAuthentication
-from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 
 def core_exception_handler(exc, context):
