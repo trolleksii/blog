@@ -47,4 +47,10 @@ class Profile(models.Model):
             self.disliked_posts.add(post)
 
     def has_voted_for(self, post):
-        return self.liked_posts.filter(pk=post.pk).exists() or self.disliked_posts.filter(pk=post.pk).exists()
+        return self._has_liked_post(post) or self._has_disliked_post(post)
+
+    def _has_liked_post(self, post):
+        return self.liked_posts.filter(pk=post.pk).exists()
+
+    def _has_disliked_post(self, post):
+        return self.disliked_posts.filter(pk=post.pk).exists()
