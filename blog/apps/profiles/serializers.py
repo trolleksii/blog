@@ -6,7 +6,7 @@ from .models import Profile
 class ProfileSerializer(serializers.ModelSerializer):
     """
     Read-only serializer that returns information about the profile, and checks
-    if request maker follows it.
+    if request maker follows this profile.
     """
     username = serializers.CharField(source='user.username')
     following = serializers.SerializerMethodField()
@@ -34,7 +34,8 @@ class ProfileRelatedField(serializers.RelatedField):
 
 class ProfileFolloweesSerializer(serializers.ModelSerializer):
     """
-    Read-only serializer that returns list of profile followees usernames.
+    Read-only serializer that returns list of usernames followed by request
+    maker.
     """
     followees = ProfileRelatedField(many=True, read_only=True)
 
