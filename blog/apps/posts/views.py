@@ -1,11 +1,11 @@
-from django.shortcuts import get_object_or_404
-
 from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, DestroyAPIView
 from rest_framework.viewsets import ModelViewSet
+
+from apps.core.shortcuts import get_object_or_404
 
 from .models import Comment, Post, Tag
 from .serializers import CommentSerializer, PostSerializer, TagSerializer
