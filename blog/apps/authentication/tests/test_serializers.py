@@ -85,16 +85,16 @@ class LoginSerializerTests(TestCase):
         self.user_credentials['password'] = 'wrongpassword'
         serializer = LoginSerializer(data=self.user_credentials)
         self.assertFalse(serializer.is_valid())
-        error = serializer.errors.get('error', None)
-        self.assertIsNotNone(error)
+        error = serializer.errors
+        self.assertNotEqual(error, {})
 
     def test_inactive_user(self):
         self.user.is_active = False
         self.user.save()
         serializer = LoginSerializer(data=self.user_credentials)
         self.assertFalse(serializer.is_valid())
-        error = serializer.errors.get('error', None)
-        self.assertIsNotNone(error)
+        error = serializer.errors
+        self.assertNotEqual(error, [])
 
 
 class UserSerializerTests(TestCase):
