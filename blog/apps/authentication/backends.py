@@ -32,7 +32,7 @@ class JWTAuthentication(BaseAuthentication):
         auth_header = get_authorization_header(request).split()
         token = self._extract_token(auth_header)
         if not token:
-            return None 
+            return None
         try:
             payload = jwt.decode(token, secret, algorithms=self.ALGORITHMS)
         except Exception as e:
