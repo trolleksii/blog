@@ -1,10 +1,14 @@
 from rest_framework.views import exception_handler
 
+from apps.authentication.backends import JWTAuthentication
+from rest_framework.status import HTTP_401_UNAUTHORIZED
+
 
 def core_exception_handler(exc, context):
     exception_class = exc.__class__.__name__
     if exception_class in ['AuthenticationFailed', 'NotAuthenticated']:
-        setattr(exc, 'auth_header', 'Bearer realm="Blog"')
+        setattr(exc, 'auth_header', JWTAuthentication.keyword)
+        setattr(exc, 'status_code', HTTP_401_UNAUTHORIZED)
     response = exception_handler(exc, context)
     detail = response.data.pop('detail', None)
     if detail:
