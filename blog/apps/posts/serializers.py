@@ -1,7 +1,8 @@
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import exceptions, serializers
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from apps.core.text import unique_slugify
 
@@ -24,20 +25,20 @@ class CommentSerializer(serializers.ModelSerializer):
         user = self.context.get('user', None)
         if user is None or not user.is_authenticated:
             msg = _('Comment author not set.')
-            raise exceptions.ValidationError(msg)
+            raise ValidationError(msg)
         post = self.context.get('post', None)
         if post is None:
             msg = _('Post to be commented not set.')
-            raise exceptions.ValidationError(msg)
+            raise ValidationError(msg)
         args['author'] = user.profile
         args['post'] = post
         return args
 
     def get_created_at(self, comment):
-        return str(comment.created_at)
+        return comment.created_at.isoformat()
 
     def get_updated_at(self, comment):
-        return str(comment.modified_at)
+        return comment.modified_at.isoformat()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -52,7 +53,7 @@ class TagSerializer(serializers.ModelSerializer):
     def to_internal_value(self, data):
         if not isinstance(data, str):
             msg = _('Expected a string, but got a {}.'.format(type(data)))
-            raise exceptions.ValidationError(msg)
+            raise ValidationError(msg)
         return {
             'body': data,
             'slug': slugify(data)
@@ -89,11 +90,11 @@ class PostSerializer(serializers.ModelSerializer):
     def validate(self, args):
         if args == {}:
             msg = _('No data were provided.')
-            raise exceptions.ValidationError(msg)
+            raise ValidationError(msg)
         user = self.context.get('user', None)
         if user is None or not user.is_authenticated:
-            msg = _('User is not authenticated.')
-            raise exceptions.ValidationError(msg)
+            msg = _('You must pass a valid user in order to perform this operation.')
+            raise ValidationError(msg)
         args['author'] = user.profile
         slug_check = False
         while not slug_check:
@@ -122,7 +123,7 @@ class PostSerializer(serializers.ModelSerializer):
             for tag_body in new_tags.difference(old_tags):
                 tag = Tag.objects.get_or_create(body=tag_body, slug=slugify(tag_body))[0]
                 instance.tags.add(tag)
-            # and removing unused
+            # and removing extra
             for tag_body in old_tags.difference(new_tags):
                 tag = Tag.objects.get(body=tag_body)
                 instance.tags.remove(tag)
@@ -141,7 +142,7 @@ class PostSerializer(serializers.ModelSerializer):
         return False
 
     def get_created_at(self, post):
-        return str(post.created_at)
+        return post.created_at.isoformat()
 
     def get_updated_at(self, post):
-        return str(post.modified_at)
+        return post.modified_at.isoformat()
