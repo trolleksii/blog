@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, DestroyAPIView
@@ -56,9 +57,9 @@ class PostViewSet(ModelViewSet):
     def update(self, request, slug, *args, **kwargs):
         data = request.data.get('post', {})
         post = get_object_or_404(Post, slug=slug)
-        if post.author != request.user.profile:
-            return Response({'errors': {'update': "Operation not allowed"}},
-                            status=status.HTTP_403_FORBIDDEN)
+        request_maker = request.user.profile
+        if not request_maker.is_author_of(post):
+            raise PermissionDenied
         serializer = self.serializer_class(
             post,
             data=data,
@@ -81,9 +82,9 @@ class PostViewSet(ModelViewSet):
 
     def destroy(self, request, slug, *args, **kwargs):
         post = get_object_or_404(Post, slug=slug)
-        if post.author != request.user.profile:
-            return Response({'errors': {'delete': "Operation not allowed"}},
-                            status=status.HTTP_403_FORBIDDEN)
+        request_maker = request.user.profile
+        if not request_maker.is_author_of(post):
+            raise PermissionDenied
         post.delete()
         return Response(status=status.HTTP_200_OK)
 
@@ -98,10 +99,11 @@ class PostViewSet(ModelViewSet):
     @detail_route(methods=['POST', 'DELETE'], permission_classes=[IsAuthenticated], url_name='favorite')
     def favorite(self, request, slug):
         post = get_object_or_404(Post, slug=slug)
-        if self.request.method == 'POST':
-            request.user.profile.favorite(post)
+        request_maker = request.user.profile
+        if request.method == 'POST':
+            request_maker.favorite(post)
         else:
-            request.user.profile.unfavorite(post)
+            request_maker.unfavorite(post)
         serializer = self.serializer_class(
             post,
             context={'user': request.user}
@@ -111,14 +113,12 @@ class PostViewSet(ModelViewSet):
     @detail_route(methods=['POST', 'DELETE'], permission_classes=[IsAuthenticated], url_name='like')
     def like(self, request, slug):
         post = get_object_or_404(Post, slug=slug)
-        if post.author.user != request.user:
-            # user can't like/dislike his own posts
-            if not request.user.profile.has_voted_for(post):
-                # user votes only once, and can't change his vote
-                if self.request.method == 'POST':
-                    request.user.profile.like(post)
-                else:
-                    request.user.profile.dislike(post)
+        request_maker = request.user.profile
+        if request_maker.can_vote_for(post):
+            if request.method == 'POST':
+                request_maker.like(post)
+            else:
+                request_maker.dislike(post)
         serializer = self.serializer_class(
             post,
             context={'user': request.user}
@@ -170,8 +170,8 @@ class CommentDestroyAPIView(DestroyAPIView):
 
     def destroy(self, request, slug, pk, *args, **kwargs):
         comment = get_object_or_404(Comment, post__slug=slug, pk=pk)
-        if comment.author != request.user.profile:
-            return Response({'errors': {'delete': "Operation not allowed"}},
-                            status=status.HTTP_403_FORBIDDEN)
+        request_maker = request.user.profile
+        if not request_maker.is_author_of(comment):
+            raise PermissionDenied
         comment.delete()
         return Response(status=status.HTTP_200_OK)
