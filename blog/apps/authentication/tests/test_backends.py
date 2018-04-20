@@ -49,10 +49,15 @@ class AuthBackendTests(TestCase):
         result = JWTAuthentication().authenticate(request)
         self.assertIsNone(result)
 
-    def test_header_without_token(self):
+    def test_token_of_deleted_user(self):
         token = self.user.token
         self.user.delete()
         request = self._create_request_with_auth_header(token)
+        with self.assertRaises(exceptions.AuthenticationFailed):
+            user, token = JWTAuthentication().authenticate(request)
+
+    def test_header_without_token(self):
+        request = self._create_request_with_auth_header('')
         with self.assertRaises(exceptions.AuthenticationFailed):
             user, token = JWTAuthentication().authenticate(request)
 
