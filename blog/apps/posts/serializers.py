@@ -119,12 +119,12 @@ class PostSerializer(serializers.ModelSerializer):
         if new_tags:
             old_tags = {tag['body'] for tag in instance.tags.values('body')}
             new_tags = {tag['body'] for tag in new_tags}
-            # adding new tags
-            for tag_body in new_tags.difference(old_tags):
+            tags_to_add = new_tags.difference(old_tags)
+            tags_to_remove = old_tags.difference(new_tags)
+            for tag_body in tags_to_add:
                 tag = Tag.objects.get_or_create(body=tag_body, slug=slugify(tag_body))[0]
                 instance.tags.add(tag)
-            # and removing extra
-            for tag_body in old_tags.difference(new_tags):
+            for tag_body in tags_to_remove:
                 tag = Tag.objects.get(body=tag_body)
                 instance.tags.remove(tag)
         return instance
