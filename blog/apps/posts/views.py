@@ -114,11 +114,10 @@ class PostViewSet(ModelViewSet):
     def like(self, request, slug):
         post = get_object_or_404(Post, slug=slug)
         request_maker = request.user.profile
-        if request_maker.can_vote_for(post):
-            if request.method == 'POST':
-                request_maker.like(post)
-            else:
-                request_maker.dislike(post)
+        if request.method == 'POST':
+            request_maker.like(post)
+        else:
+            request_maker.dislike(post)
         serializer = self.serializer_class(
             post,
             context={'user': request.user}
