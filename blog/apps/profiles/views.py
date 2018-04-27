@@ -22,8 +22,10 @@ class ProfileAPIView(views.APIView):
 
 class ProfileFollowAPIView(views.APIView):
     """
-    Handles profile fllows/unfollows. Request maker is the follower, followee
-    is identified by username parameter.
+    Handles profile fllows/unfollows.
+
+    Adds/removes profile to the list of followees of a currently authenticated
+    user.
     """
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ProfileSerializer
