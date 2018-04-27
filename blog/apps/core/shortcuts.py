@@ -1,9 +1,11 @@
+from django.db.models import Model
+
 from rest_framework.exceptions import NotFound
 
 
 def get_object_or_404(model, **kwargs):
     """
-    Query db for a single object of <model> by one or more search criteria. 
+    Query db for a single object of <model> by one or more search criteria.
 
     For example:
 
@@ -11,6 +13,7 @@ def get_object_or_404(model, **kwargs):
 
     Will raise rest_framework.exceptions.NotFound if query fails.
     """
+    assert issubclass(model, Model)
     try:
         obj = model._default_manager.get(**kwargs)
         return obj
