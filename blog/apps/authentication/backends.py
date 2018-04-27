@@ -1,6 +1,5 @@
 import jwt
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.authentication import (
@@ -35,7 +34,7 @@ class JWTAuthentication(BaseAuthentication):
             return None
         try:
             payload = jwt.decode(token, secret, algorithms=self.ALGORITHMS)
-        except Exception as e:
+        except jwt.exceptions.InvalidTokenError as e:
             raise exceptions.AuthenticationFailed(e, self.exc_name)
         return self.authenticate_credentials(payload['id'])
 
@@ -45,7 +44,7 @@ class JWTAuthentication(BaseAuthentication):
         """
         try:
             user = User.objects.get(pk=pk)
-        except ObjectDoesNotExist:
+        except User.DoesNotExist:
             msg = _('No user matching this token was found.')
             raise exceptions.AuthenticationFailed(msg, self.exc_name)
 
@@ -55,6 +54,14 @@ class JWTAuthentication(BaseAuthentication):
         return (user, user.token)
 
     def _extract_token(self, auth_header):
+        """
+        Extracts token from Authentication header.
+
+        Returns None in case if:
+          1. header was not found
+          2. keyword is incorrect
+          3. header contains more or less than 2 'words'(keyword + token)
+        """
         if not auth_header or auth_header[0].lower().decode() != self.keyword.lower():
             return None
         if len(auth_header) == 1:
