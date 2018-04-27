@@ -96,12 +96,10 @@ class PostSerializer(serializers.ModelSerializer):
             msg = _('You must pass a valid user in order to perform this operation.')
             raise ValidationError(msg)
         args['author'] = user.profile
-        slug_check = False
-        while not slug_check:
-            slug = unique_slugify(args['title'])
-            if not Post.objects.filter(slug=slug).exists():
-                slug_check = True
-        args['slug'] = slug
+        args['slug'] = unique_slugify(
+            model=self.Meta.model,
+            text=args['title']
+        )
         return args
 
     def create(self, validated_data):

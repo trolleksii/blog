@@ -31,7 +31,7 @@ class PostFactory(factory.django.DjangoModelFactory):
     author = factory.SubFactory(ProfileFactory)
     body = factory.Faker('sentence', nb_words=4)
     title = factory.Sequence(lambda x: 'Post Title {}'.format(x))
-    slug = factory.LazyAttribute(lambda x: unique_slugify(x.title))
+    slug = factory.LazyAttribute(lambda x: unique_slugify(model=Post, text=x.title))
 
 
 class CommentFactory(factory.django.DjangoModelFactory):
@@ -47,4 +47,4 @@ class TagFactory(factory.django.DjangoModelFactory):
         model = Tag
 
     body = factory.Sequence(lambda x: 'tag{}'.format(x))
-    slug = factory.LazyAttribute(lambda x: unique_slugify(x.body))
+    slug = factory.LazyAttribute(lambda x: unique_slugify(model=Tag, text=x.body))
