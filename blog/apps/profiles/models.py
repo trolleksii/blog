@@ -32,20 +32,21 @@ class Profile(models.Model):
     def has_in_favorites(self, post):
         return self.favorites.filter(pk=post.pk).exists()
 
-    # follower --> me --> followee
     def has_in_followees(self, profile):
         return self.followees.filter(pk=profile.pk).exists()
 
     def like(self, post):
-        if self.can_vote_for(post):
-            self.liked_posts.add(post)
+        if self.cant_vote_for(post):
+            return
+        self.liked_posts.add(post)
 
     def dislike(self, post):
-        if self.can_vote_for(post):
-            self.disliked_posts.add(post)
+        if self.cant_vote_for(post):
+            return
+        self.disliked_posts.add(post)
 
-    def can_vote_for(self, post):
-        return not (self._has_liked_post(post) or self._has_disliked_post(post) or self.is_author_of(post))
+    def cant_vote_for(self, post):
+        return self.is_author_of(post) or self._has_liked_post(post) or self._has_disliked_post(post)
 
     def _has_liked_post(self, post):
         return self.liked_posts.filter(pk=post.pk).exists()
