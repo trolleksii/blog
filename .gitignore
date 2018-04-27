@@ -5,4 +5,5 @@ __pycache__
 *.swp
 .vscode
 *.code-workspace
-
+.coverage
+htmlcov
