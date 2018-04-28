@@ -97,25 +97,16 @@ class TagModelTests(TestCase):
 
     def test_str(self):
         tag = Tag.objects.create(
-            slug='new-tag',
             body='New Tag'
         )
         self.assertEqual(str(tag), tag.body)
 
     def test_add_duplicate_tag(self):
         Tag.objects.create(
-            slug='new-tag',
             body='New Tag'
         )
-        duplicate_slug = Tag(
-            slug='new-tag',
-            body='Newest Tag'
-        )
-        duplicate_body = Tag(
-            slug='new-tag',
-            body='Newest Tag'
+        duplicate = Tag(
+            body='New Tag'
         )
         with self.assertRaises(ValidationError):
-            duplicate_slug.full_clean()
-        with self.assertRaises(ValidationError):
-            duplicate_body.full_clean()
+            duplicate.full_clean()

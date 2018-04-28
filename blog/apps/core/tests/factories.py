@@ -47,4 +47,3 @@ class TagFactory(factory.django.DjangoModelFactory):
         model = Tag
 
     body = factory.Sequence(lambda x: 'tag{}'.format(x))
-    slug = factory.LazyAttribute(lambda x: unique_slugify(model=Tag, text=x.body))

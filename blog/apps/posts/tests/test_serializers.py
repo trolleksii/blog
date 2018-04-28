@@ -215,15 +215,6 @@ class TagSerializerTests(TestCase):
 
     fixtures = ['posts.json']
 
-    def test_serialize_tag(self):
-        text = 'testtag'
-        tag = Tag.objects.create(
-            body=text,
-            slug=text
-        )
-        serializer = TagSerializer(tag)
-        self.assertEqual(text, serializer.data)
-
     def test_serialize_multiple_tags(self):
         queryset = Tag.objects.all()
         self.assertGreaterEqual(len(queryset), 2)
@@ -255,7 +246,6 @@ class TagSerializerTests(TestCase):
     def test_deserialize_multiple_tags_with_duplicates(self):
         Tag.objects.create(
             body='asdfgh',
-            slug='asdfgh'
         )
         tag_bodys = ['qwerty', 'asdfgh', 'zxcvbn']
         serializer = TagSerializer(
