@@ -43,7 +43,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class TagSerializer(serializers.ModelSerializer):
     """
-    Serialixer takes a string with Tag body or a list of strings, if many=True.
+    Serializer takes a string with Tag body or a list of strings, if many=True.
     Deserializer returns a string representation of Tag or a list of them.
     """
     class Meta:
@@ -52,22 +52,16 @@ class TagSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         if not isinstance(data, str):
-            msg = _('Expected a string, but got a {}.'.format(type(data)))
+            msg = _('Expected a string, received {}.'.format(type(data)))
             raise ValidationError(msg)
-        return {
-            'body': data,
-            'slug': slugify(data)
-        }
-
-    @property
-    def data(self):
-        return super(serializers.Serializer, self).data
+        return {'body': data}
 
     def to_representation(self, obj):
         return obj.body
 
     def create(self, validated_data):
-        return self.Meta.model.objects.get_or_create(**validated_data)[0]
+        tag = Tag.objects.get_or_create(**validated_data)[0]
+        return tag
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -120,7 +114,7 @@ class PostSerializer(serializers.ModelSerializer):
             tags_to_add = new_tags.difference(old_tags)
             tags_to_remove = old_tags.difference(new_tags)
             for tag_body in tags_to_add:
-                tag = Tag.objects.get_or_create(body=tag_body, slug=slugify(tag_body))[0]
+                tag = Tag.objects.get_or_create(body=tag_body)[0]
                 instance.tags.add(tag)
             for tag_body in tags_to_remove:
                 tag = Tag.objects.get(body=tag_body)
