@@ -75,7 +75,6 @@
   "model": "posts.tag",
   "pk": 1,
   "fields": {
-    "slug": "coffee",
     "body": "coffee"
   }
 },
@@ -83,7 +82,6 @@
   "model": "posts.tag",
   "pk": 2,
   "fields": {
-    "slug": "beer",
     "body": "beer"
   }
 },
@@ -91,7 +89,6 @@
   "model": "posts.tag",
   "pk": 3,
   "fields": {
-    "slug": "alcohol",
     "body": "alcohol"
   }
 },
@@ -99,7 +96,6 @@
   "model": "posts.tag",
   "pk": 4,
   "fields": {
-    "slug": "revelations",
     "body": "revelations"
   }
 },

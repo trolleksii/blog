@@ -4,8 +4,7 @@ from apps.core.models import TimeStampedModel
 
 
 class Tag(models.Model):
-    slug = models.SlugField(db_index=True, max_length=50, unique=True, blank=False)
-    body = models.TextField(max_length=50, unique=True, blank=False)
+    body = models.TextField(db_index=True, max_length=50, unique=True, blank=False)
 
     def __str__(self):
         return self.body
