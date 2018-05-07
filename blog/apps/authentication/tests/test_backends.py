@@ -25,9 +25,8 @@ class AuthBackendTests(TestCase):
     def test_all_correct(self):
         token = self.user.token
         request = self._create_request_with_auth_header(token)
-        auth_user, auth_token = JWTAuthentication().authenticate(request)
+        auth_user, _auth_token = JWTAuthentication().authenticate(request)
         self.assertEqual(auth_user, self.user)
-        self.assertNotEqual(auth_token, token)
 
     def test_deleted_user(self):
         token = self.user.token
