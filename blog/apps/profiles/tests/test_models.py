@@ -154,11 +154,13 @@ class ProfileModelTests(TestCase):
         self.assertEqual(likes_after - likes_before, 0)
         self.assertEqual(dislikes_after - dislikes_before, 1)
 
-    def test_cant_vote_for(self):
+    def test_can_vote_for(self):
         kyle = Profile.objects.get(user__username='kyle')
         stan = Profile.objects.get(user__username='stan')
         post = Post.objects.first()
+        self.assertTrue(kyle.can_vote_for(post))
+        self.assertTrue(stan.can_vote_for(post))
         kyle.like(post)
         stan.dislike(post)
-        self.assertTrue(kyle.cant_vote_for(post))
-        self.assertTrue(stan.cant_vote_for(post))
+        self.assertFalse(kyle.can_vote_for(post))
+        self.assertFalse(stan.can_vote_for(post))
