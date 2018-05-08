@@ -6,122 +6,150 @@ from rest_framework import status
 from apps.authentication.models import User
 
 
-class ProfileViewTests(TestCase):
+class ProfilesTests(TestCase):
 
-    fixtures = ['profiles.json']
+    VIEWNAME = ''
+    CONTENT_TYPE = 'application/json'
+    TOKEN_PREFIX = 'Bearer'
+    TEST_USERS = {}
+
+    def setUp(self):
+        for user in self.TEST_USERS:
+            User.objects.create_user(**user)
+
+    def get_headers(self, *, token, **kwargs):
+        return {'HTTP_AUTHORIZATION': ' '.join((self.TOKEN_PREFIX, token))}
+
+    def get_request_path(self, reverse_viewname=None, reverse_kwargs={}):
+        _viewname = reverse_viewname or self.VIEWNAME
+        self.assertTrue(_viewname, msg='You must specify either reverse_viewname'
+                        'or set .VIEWNAME attribute on the view')
+        return reverse(_viewname, kwargs=reverse_kwargs)
+
+
+class ProfileViewTests(ProfilesTests):
+
+    VIEWNAME = 'profiles:profile_view'
+    TEST_USERS = [
+        {'username': 'kenny', 'password': 'qwerty123'},
+        {'username': 'stan', 'password': 'qwerty123'}
+    ]
+
+    def setUp(self):
+        super().setUp()
+        follower = User.objects.get(username=self.TEST_USERS[0]['username']).profile
+        followee = User.objects.get(username=self.TEST_USERS[1]['username']).profile
+        follower.follow(followee)
 
     def test_get_profile_info(self):
-        # Kenny makes request to see Stan's profile
         token = User.objects.get(username='kenny').token
-        headers = {
-            'HTTP_AUTHORIZATION': 'Bearer ' + token
-        }
         response = self.client.get(
-            reverse('profiles:profile_view', kwargs={'username': 'stan'}),
-            **headers
+            self.get_request_path(reverse_kwargs={'username': 'stan'}),
+            **self.get_headers(token=token)
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = response.data.get('profile', None)
         self.assertEqual(profile['username'], 'stan')
         self.assertTrue(profile['following'])
 
     def test_get_profile_info_unauthenticated(self):
         response = self.client.get(
-            reverse('profiles:profile_view', kwargs={'username': 'stan'})
+            self.get_request_path(reverse_kwargs={'username': 'stan'}),
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = response.data.get('profile', None)
         self.assertEqual(profile['username'], 'stan')
         self.assertFalse(profile['following'])
 
 
-class ProfileFollowViewTests(TestCase):
+class ProfileFollowViewTests(ProfilesTests):
 
-    fixtures = ['profiles.json']
+    VIEWNAME = 'profiles:follow_view'
+    TEST_USERS = [
+        {'username': 'kenny', 'password': 'qwerty123'},
+        {'username': 'kyle', 'password': 'qwerty123'}
+    ]
 
     def test_follow_self(self):
         token = User.objects.get(username='kyle').token
-        headers = {
-            'HTTP_AUTHORIZATION': 'Bearer ' + token
-        }
         response = self.client.post(
-            reverse('profiles:follow_view', kwargs={'username': 'kyle'}),
-            data={},
-            content_type='application/json',
-            **headers
+            self.get_request_path(reverse_kwargs={'username': 'kyle'}),
+            **self.get_headers(token=token)
         )
-        data = response.data.get('profile', None)
-        self.assertFalse(data['following'])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.data.get('profile', {})
+        self.assertFalse(data.get('following', True))
 
     def test_follow_profile(self):
         token = User.objects.get(username='kenny').token
-        headers = {
-            'HTTP_AUTHORIZATION': 'Bearer ' + token
-        }
         response = self.client.post(
-            reverse('profiles:follow_view', kwargs={'username': 'kyle'}),
-            data={},
-            content_type='application/json',
-            **headers
+            self.get_request_path(reverse_kwargs={'username': 'kyle'}),
+            **self.get_headers(token=token)
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.data.get('profile', None)
         self.assertTrue(data['following'])
 
     def test_unfollow(self):
-        user = User.objects.get(username='kenny')
-        followee = 'kyle'
-        user_has_followee = len(user.profile.followees.filter(
-            user__username=followee)) == 1
-        self.assertTrue(user_has_followee)
-        headers = {
-            'HTTP_AUTHORIZATION': 'Bearer ' + user.token
-        }
+        follower = User.objects.get(username='kenny')
+        followee = User.objects.get(username='kyle')
+        follower.profile.follow(followee.profile)
+        self.assertTrue(follower.profile.has_in_followees(followee))
         response = self.client.delete(
-            reverse('profiles:follow_view', kwargs={'username': followee}),
-            data={},
-            content_type='application/json',
-            **headers
+            self.get_request_path(reverse_kwargs={'username': followee}),
+            **self.get_headers(token=follower.token)
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.data.get('profile', None)
         self.assertFalse(data['following'])
 
     def test_unauthenticated(self):
         response = self.client.post(
-            reverse('profiles:follow_view', kwargs={'username': 'kyle'}),
-            data={},
-            content_type='application/json'
+            self.get_request_path(reverse_kwargs={'username': 'kyle'}),
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class ProfileFolloweesViewTests(TestCase):
+class ProfileFolloweesViewTests(ProfilesTests):
 
-    fixtures = ['profiles.json']
+    VIEWNAME = 'profiles:followees_view'
+    TEST_USERS = [
+        {'username': 'kenny', 'password': 'qwerty123'},
+        {'username': 'stan', 'password': 'qwerty123'},
+        {'username': 'kyle', 'password': 'qwerty123'}
+    ]
 
-    def test_get_empty_follows(self):
+    def setUp(self):
+        super().setUp()
+        self.followees = []
+        self.follower = User.objects.get(username=self.TEST_USERS[0]['username']).profile
+        for entry in self.TEST_USERS[1:]:
+            followee = User.objects.get(username=entry['username']).profile
+            self.follower.follow(followee)
+            self.followees.append(entry['username'])
+
+    def test_get_followees_if_absent(self):
         token = User.objects.get(username='stan').token
-        headers = {
-            'HTTP_AUTHORIZATION': 'Bearer ' + token
-        }
         response = self.client.get(
-            reverse('profiles:followees_view'),
-            **headers
+            self.get_request_path(),
+            **self.get_headers(token=token)
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         followees = response.data.get('followees', None)
         self.assertEqual(followees, [])
 
-    def test_get_follows(self):
+    def test_get_followees(self):
         token = User.objects.get(username='kenny').token
-        headers = {
-            'HTTP_AUTHORIZATION': 'Bearer ' + token
-        }
         response = self.client.get(
-            reverse('profiles:followees_view'),
-            **headers
+            self.get_request_path(),
+            **self.get_headers(token=token)
         )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         followees = response.data.get('followees', None)
-        self.assertEqual(set(followees), set(['stan', 'kyle']))
+        self.assertEqual(set(followees), set(self.followees))
 
     def test_get_unauthenticated(self):
         response = self.client.get(
-            reverse('profiles:followees_view'),
+            self.get_request_path()
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
