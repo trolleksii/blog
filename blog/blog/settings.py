@@ -85,11 +85,28 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+_db_postgres = {
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'NAME': os.environ.get('DB_NAME', None),
+    'USER': os.environ.get('DB_USER', None),
+    'PASSWORD': os.environ.get('DB_PSWD', None),
+    'HOST': os.environ.get('DB_HOST', 'localhost'),
+    'PORT': os.environ.get('DB_PORT', '5432')
+}
+
+
+def _postgres_available():
+    return _db_postgres.get('NAME', None) is not None
+
+
+_db_sqlite = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+}
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': _db_postgres if _postgres_available() else _db_sqlite
 }
 
 
