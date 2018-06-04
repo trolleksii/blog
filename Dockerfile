@@ -2,9 +2,9 @@ FROM django as django-with-pkgs
 
 RUN pip install --upgrade pip
 
-COPY requirements* /src/
+COPY requirements.txt /src/
 
-RUN pip install -r /src/requirements_docker.txt
+RUN pip install -r /src/requirements.txt
 
 
 

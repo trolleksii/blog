@@ -31,10 +31,10 @@ virtualenv -p $(which python3) ./venv
 source ./venv/bin/activate
 ```
 
-6. Install required packages from requirements_testing.txt:
+6. Install required packages:
 
 ```SH
-pip install -r ./blog/requirements_testing.txt
+pip install -r ./blog/requirements.txt
 ```
 
 7. `cd` into ./blog/blog:
