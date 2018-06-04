@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    # 'django.contrib.staticfiles',
 
     'corsheaders',
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.posts',
     'apps.core',
     'apps.profiles',
+    'apps.ui',
 ]
 
 MIDDLEWARE = [
