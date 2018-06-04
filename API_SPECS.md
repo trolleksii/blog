@@ -412,7 +412,7 @@ User can only delete the posts he/she wrote
 
 Authentication required
 
-User is not allowed to like his own posts, 'likes' can't be withdrawn or changed to 'dislikes'
+Users are not allowed to like their own posts
 
 
 ### Dislike the Post
@@ -421,7 +421,7 @@ User is not allowed to like his own posts, 'likes' can't be withdrawn or changed
 
 Authentication required
 
-User is not allowed to dislike his own posts, 'dislikes' can't be withdrawn or changed to 'likes'
+Users are not allowed to dislike their own posts
 
 
 ### Add Post to Favorites
