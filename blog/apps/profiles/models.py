@@ -36,26 +36,21 @@ class Profile(models.Model):
         return self.followees.filter(pk=profile.pk).exists()
 
     def like(self, post):
-        if self.can_vote_for(post):
+        if not self.is_author_of(post):
+            if self.has_disliked_post(post):
+                self.disliked_posts.remove(post)
             self.liked_posts.add(post)
 
     def dislike(self, post):
-        if self.can_vote_for(post):
+        if not self.is_author_of(post):
+            if self.has_liked_post(post):
+                self.liked_posts.remove(post)
             self.disliked_posts.add(post)
 
-    def can_vote_for(self, post):
-        return all(
-            [
-                not self.is_author_of(post),
-                not self._has_liked_post(post),
-                not self._has_disliked_post(post)
-            ]
-        )
-
-    def _has_liked_post(self, post):
+    def has_liked_post(self, post):
         return self.liked_posts.filter(pk=post.pk).exists()
 
-    def _has_disliked_post(self, post):
+    def has_disliked_post(self, post):
         return self.disliked_posts.filter(pk=post.pk).exists()
 
     def is_author_of(self, post_or_comment):
